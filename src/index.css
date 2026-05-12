@@ -83,5 +83,6 @@ button:focus-visible {
     background: #ff00d4 !important;
 }
 .navbar{
-  border-bottom: 2px dashed #515151 !important;
+  border-bottom: 2px dashed #c2c2c2 !important;
+  box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px !important;
 }
