@@ -6,7 +6,7 @@ import Navbar from "./Components/Navbar";
 import Dashboard from "./Components/Dashboard";
 import AddExpense from "./Components/AddExpense";
 import ViewExpenses from "./Components/ViewExpenses";
-
+// import "bootstrap-icons/font/bootstrap-icons.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddCategory from "./Components/AddCategory";
