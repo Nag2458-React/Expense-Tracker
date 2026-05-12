@@ -10,6 +10,7 @@ a:hover {
 }
 .navbar-toggler{
   background:#fff !important;
+}
 body{
   background-image: url("/src/assets/m.jpg");
   background-size: cover;
