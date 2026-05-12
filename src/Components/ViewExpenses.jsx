@@ -35,7 +35,6 @@ const ViewExpenses = () => {
       <div className="card shadow">
         <div className="card-body">
           <h3 className="text-center mb-4">Monthly Expenses</h3>
-          <div className="table-responsive">
           <table className="table table-bordered table-striped">
             <thead>
               <tr>
@@ -73,7 +72,6 @@ const ViewExpenses = () => {
               )}
             </tbody>
           </table>
-            </div>
         </div>
       </div>
     </div>

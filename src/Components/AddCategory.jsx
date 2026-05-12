@@ -100,7 +100,7 @@ const AddCategory = () => {
           <div className="card shadow">
             <div className="card-body">
               <h4 className="text-center mb-3">Categories List</h4>
-              <div className="table-responsive">
+
               <table className="table table-bordered table-striped">
                 <thead>
                   <tr>
@@ -135,7 +135,6 @@ const AddCategory = () => {
                   )}
                 </tbody>
               </table>
-                </div>
             </div>
           </div>
         </div>
