@@ -114,7 +114,7 @@ const AddIncome = () => {
           <div className="card shadow">
             <div className="card-body">
               <h3 className="text-center mb-4">Income History</h3>
-
+              <div className="table-responsive">
               <table className="table table-bordered table-striped">
                 <thead className="table-dark">
                   <tr>
@@ -155,6 +155,7 @@ const AddIncome = () => {
                   )}
                 </tbody>
               </table>
+                </div>
             </div>
           </div>
         </div>
