@@ -17,11 +17,14 @@ const AddIncome = () => {
   const [data, setData] = useState({
     owner: "",
     flat: "",
+    billDate: "",
+
     waterBill: "",
     electricityBill: "",
     maintainanceBill: "",
     garbageBill: "",
     otherBill: "",
+
     description: "",
     amount: "",
   });
@@ -80,11 +83,9 @@ const AddIncome = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const currentDate = new Date();
+    // ONLY TIME DYNAMIC
 
-    const date = currentDate.toLocaleDateString("en-GB");
-
-    const time = currentDate.toLocaleTimeString();
+    const time = new Date().toLocaleTimeString();
 
     try {
       // UPDATE
@@ -94,7 +95,6 @@ const AddIncome = () => {
 
         await updateDoc(updateRef, {
           ...data,
-          date,
           time,
         });
 
@@ -106,7 +106,6 @@ const AddIncome = () => {
 
         await addDoc(collection(db, "apartment_amounts"), {
           ...data,
-          date,
           time,
         });
 
@@ -118,11 +117,14 @@ const AddIncome = () => {
       setData({
         owner: "",
         flat: "",
+        billDate: "",
+
         waterBill: "",
         electricityBill: "",
         maintainanceBill: "",
         garbageBill: "",
         otherBill: "",
+
         description: "",
         amount: "",
       });
@@ -153,11 +155,14 @@ const AddIncome = () => {
     setData({
       owner: item.owner,
       flat: item.flat,
+      billDate: item.billDate,
+
       waterBill: item.waterBill,
       electricityBill: item.electricityBill,
       maintainanceBill: item.maintainanceBill,
       garbageBill: item.garbageBill,
       otherBill: item.otherBill,
+
       description: item.description,
       amount: item.amount,
     });
@@ -209,6 +214,23 @@ const AddIncome = () => {
                         placeholder="Enter Flat No"
                         name="flat"
                         value={data.flat}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* DATE FIELD */}
+
+                  <div className="col-md-3">
+                    <div className="mb-3">
+                      <label>Bill Date</label>
+
+                      <input
+                        type="date"
+                        className="form-control"
+                        name="billDate"
+                        value={data.billDate}
                         onChange={handleChange}
                         required
                       />
@@ -291,7 +313,6 @@ const AddIncome = () => {
                   <div className="col-md-3">
                     <div className="mb-3">
                       <label>Other Bill</label>
-                      <small> (Any Events)</small>
 
                       <input
                         type="number"
@@ -320,15 +341,15 @@ const AddIncome = () => {
                     </div>
                   </div>
 
+                  {/* DESCRIPTION */}
+
                   <div className="col-md-12">
                     <div className="mb-3">
                       <label>Description</label>
-                      <small> (For Other Bill)</small>
 
                       <textarea
-                        type="text"
                         className="form-control"
-                        placeholder="EX: Dasara Event Bill"
+                        placeholder="EX: Festival Event Bill"
                         name="description"
                         value={data.description}
                         onChange={handleChange}
@@ -361,6 +382,7 @@ const AddIncome = () => {
                       <th>S.No</th>
                       <th>Owner</th>
                       <th>Flat</th>
+                      <th>Bill Date</th>
                       <th>Water</th>
                       <th>Electricity</th>
                       <th>Maintainance</th>
@@ -369,7 +391,6 @@ const AddIncome = () => {
                       <th>Total</th>
                       <th>Description</th>
                       <th>Time</th>
-                      <th>Date</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
@@ -385,6 +406,8 @@ const AddIncome = () => {
 
                           <td>{item.flat}</td>
 
+                          <td>{item.billDate}</td>
+
                           <td>₹ {item.waterBill}</td>
 
                           <td>₹ {item.electricityBill}</td>
@@ -398,13 +421,10 @@ const AddIncome = () => {
                           <td>
                             <b>₹ {item.amount}</b>
                           </td>
-                          <td>
-                            {" "}
-                            <b>{item.description}</b>
-                          </td>
-                          <td>{item.time}</td>
 
-                          <td>{item.date}</td>
+                          <td>{item.description}</td>
+
+                          <td>{item.time}</td>
 
                           {/* EDIT */}
 
@@ -431,7 +451,7 @@ const AddIncome = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={13} className="text-center">
+                        <td colSpan={14} className="text-center">
                           No Data Found
                         </td>
                       </tr>

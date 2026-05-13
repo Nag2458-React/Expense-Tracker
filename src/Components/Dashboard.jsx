@@ -20,7 +20,13 @@ const Dashboard = () => {
   const [otherTotal, setOtherTotal] = useState(0);
 
   const [apartments, setApartments] = useState([]);
-  const [description, setDescription] = useState("");
+
+  const [allData, setAllData] = useState([]);
+
+  // MONTH SELECT
+
+  const [selectedMonth, setSelectedMonth] = useState("");
+
   // FETCH DATA
 
   const fetchApartments = async () => {
@@ -32,48 +38,13 @@ const Dashboard = () => {
         ...doc.data(),
       }));
 
+      setAllData(data);
+
+      // FIRST TIME ALL DATA DISPLAY
+
+      calculateTotals(data);
+
       setApartments(data);
-
-      // TOTAL FLATS
-
-      setTotalApartments(data.length);
-
-      // TOTALS
-
-      let total = 0;
-      let water = 0;
-      let electricity = 0;
-      let maintainance = 0;
-      let garbage = 0;
-      let other = 0;
-      let description = " ";
-      data.forEach((item) => {
-        total += Number(item.amount || 0);
-
-        water += Number(item.waterBill || 0);
-
-        electricity += Number(item.electricityBill || 0);
-
-        maintainance += Number(item.maintainanceBill || 0);
-
-        garbage += Number(item.garbageBill || 0);
-
-        other += Number(item.otherBill || 0);
-        description += Number(item.description || 0);
-      });
-
-      setTotalAmount(total);
-
-      setWaterTotal(water);
-
-      setElectricityTotal(electricity);
-
-      setMaintainanceTotal(maintainance);
-
-      setGarbageTotal(garbage);
-
-      setOtherTotal(other);
-      setDescription(description);
     } catch (error) {
       console.log(error);
     }
@@ -83,16 +54,94 @@ const Dashboard = () => {
     fetchApartments();
   }, []);
 
+  // TOTAL CALCULATION FUNCTION
+
+  const calculateTotals = (data) => {
+    let total = 0;
+
+    let water = 0;
+
+    let electricity = 0;
+
+    let maintainance = 0;
+
+    let garbage = 0;
+
+    let other = 0;
+
+    data.forEach((item) => {
+      total += Number(item.amount || 0);
+
+      water += Number(item.waterBill || 0);
+
+      electricity += Number(item.electricityBill || 0);
+
+      maintainance += Number(item.maintainanceBill || 0);
+
+      garbage += Number(item.garbageBill || 0);
+
+      other += Number(item.otherBill || 0);
+    });
+
+    setTotalApartments(data.length);
+
+    setTotalAmount(total);
+
+    setWaterTotal(water);
+
+    setElectricityTotal(electricity);
+
+    setMaintainanceTotal(maintainance);
+
+    setGarbageTotal(garbage);
+
+    setOtherTotal(other);
+  };
+
+  // MONTH FILTER
+
+  const handleMonthChange = (e) => {
+    const monthValue = e.target.value;
+
+    setSelectedMonth(monthValue);
+
+    // IF MONTH EMPTY => SHOW ALL DATA
+
+    if (monthValue === "") {
+      setApartments(allData);
+
+      calculateTotals(allData);
+
+      return;
+    }
+
+    // FILTER MONTH DATA
+
+    const filteredData = allData.filter((item) => {
+      if (!item.billDate) return false;
+
+      // billDate format => yyyy-mm-dd
+
+      const formattedMonth = item.billDate.slice(0, 7);
+
+      return formattedMonth === monthValue;
+    });
+
+    setApartments(filteredData);
+
+    calculateTotals(filteredData);
+  };
+
   return (
     <div className="container mt-5">
-      {/* TOP BOXES */}
+      {/* TOP CARDS */}
 
       <div className="row mb-4">
         {/* TOTAL FLATS */}
 
         <div className="col-md-3 mb-3">
           <div
-            className="card shadow text-center "
+            className="card shadow text-center p-3"
             style={{
               background: "#00ffe6",
               color: "#000",
@@ -101,7 +150,7 @@ const Dashboard = () => {
           >
             <h4>Total Flats</h4>
 
-            <h1>₹ {totalApartments}</h1>
+            <h1>{totalApartments}</h1>
           </div>
         </div>
 
@@ -109,7 +158,7 @@ const Dashboard = () => {
 
         <div className="col-md-3 mb-3">
           <div
-            className="card shadow text-center"
+            className="card shadow text-center p-3"
             style={{
               background: "#f7f948",
               color: "#000",
@@ -120,6 +169,139 @@ const Dashboard = () => {
 
             <h1>₹ {totalAmount}</h1>
           </div>
+        </div>
+
+        {/* WATER */}
+
+        <div className="col-md-3 mb-3">
+          <div
+            className="card shadow text-center p-3"
+            style={{
+              background: "#0dcaf0",
+              color: "#000",
+              borderRadius: "10px",
+            }}
+          >
+            <h4>Water Total</h4>
+
+            <h1>₹ {waterTotal}</h1>
+          </div>
+        </div>
+
+        {/* ELECTRICITY */}
+
+        <div className="col-md-3 mb-3">
+          <div
+            className="card shadow text-center p-3"
+            style={{
+              background: "#ffb703",
+              color: "#000",
+              borderRadius: "10px",
+            }}
+          >
+            <h4>Electricity Total</h4>
+
+            <h1>₹ {electricityTotal}</h1>
+          </div>
+        </div>
+      </div>
+
+      {/* SECOND ROW */}
+
+      <div className="row mb-4">
+        {/* MAINTAINANCE */}
+
+        <div className="col-md-3 mb-3">
+          <div
+            className="card shadow text-center p-3"
+            style={{
+              background: "#90ee90",
+              color: "#000",
+              borderRadius: "10px",
+            }}
+          >
+            <h4>Maintainance</h4>
+
+            <h1>₹ {maintainanceTotal}</h1>
+          </div>
+        </div>
+
+        {/* GARBAGE */}
+
+        <div className="col-md-3 mb-3">
+          <div
+            className="card shadow text-center p-3"
+            style={{
+              background: "#ff9999",
+              color: "#000",
+              borderRadius: "10px",
+            }}
+          >
+            <h4>Garbage</h4>
+
+            <h1>₹ {garbageTotal}</h1>
+          </div>
+        </div>
+
+        {/* OTHER */}
+
+        <div className="col-md-3 mb-3">
+          <div
+            className="card shadow text-center p-3"
+            style={{
+              background: "#d8b4fe",
+              color: "#000",
+              borderRadius: "10px",
+            }}
+          >
+            <h4>Other Total</h4>
+
+            <h1>₹ {otherTotal}</h1>
+          </div>
+        </div>
+      </div>
+
+      {/* MONTH FILTER */}
+
+      <div className="row mb-2">
+        <div className="col-md-6">
+          <label
+            className="fw-bold mb-2"
+            style={{ color: "#fff", fontWeight: "bold" }}
+          >
+            Select Month Report
+          </label>
+
+          <div className="input-group">
+            <span className="input-group-text">Select Month</span>
+
+            <input
+              style={{ width: "47%" }}
+              type="month"
+              className="form-control"
+              value={selectedMonth}
+              onChange={handleMonthChange}
+            />
+          </div>
+        </div>
+        <div className="col-md-6" style={{ textAlign: "right" }}>
+          <button
+            style={{
+              background: "#576000",
+              border: "1px solid #fff",
+              marginTop: "30px",
+            }}
+            className="btn btn-dark"
+            onClick={() => {
+              setSelectedMonth("");
+
+              setApartments(allData);
+
+              calculateTotals(allData);
+            }}
+          >
+            Show All Data
+          </button>
         </div>
       </div>
 
@@ -135,13 +317,15 @@ const Dashboard = () => {
                 <tr>
                   <th>S.No</th>
 
-                  <th>Owner Name</th>
+                  <th>Owner</th>
 
-                  <th>Flat No</th>
+                  <th>Flat</th>
 
-                  <th>Water Bill</th>
+                  <th>Bill Date</th>
 
-                  <th>Electricity Bill</th>
+                  <th>Water</th>
+
+                  <th>Electricity</th>
 
                   <th>Maintainance</th>
 
@@ -149,11 +333,11 @@ const Dashboard = () => {
 
                   <th>Other</th>
 
-                  <th>Total Amount</th>
-                  <th>Description</th>
-                  <th>Time</th>
+                  <th>Total</th>
 
-                  <th>Date</th>
+                  <th>Description</th>
+
+                  <th>Time</th>
                 </tr>
               </thead>
 
@@ -167,6 +351,8 @@ const Dashboard = () => {
 
                       <td>{item.flat}</td>
 
+                      <td>{item.billDate}</td>
+
                       <td>₹ {item.waterBill}</td>
 
                       <td>₹ {item.electricityBill}</td>
@@ -178,28 +364,26 @@ const Dashboard = () => {
                       <td>₹ {item.otherBill}</td>
 
                       <td className="fw-bold text-success">₹ {item.amount}</td>
-                      <td>
-                        <b> {item.description}</b>
-                      </td>
-                      <td>{item.time}</td>
 
-                      <td>{item.date}</td>
+                      <td>{item.description}</td>
+
+                      <td>{item.time}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={11} className="text-center">
+                    <td colSpan={12} className="text-center">
                       No Data Found
                     </td>
                   </tr>
                 )}
               </tbody>
 
-              {/* FOOTER TOTALS */}
+              {/* FOOTER */}
 
               <tfoot className="table-dark">
                 <tr>
-                  <th colSpan={3}>Grand Total</th>
+                  <th colSpan={4}>Grand Total</th>
 
                   <th>₹ {waterTotal}</th>
 
@@ -212,7 +396,6 @@ const Dashboard = () => {
                   <th>₹ {otherTotal}</th>
 
                   <th>₹ {totalAmount}</th>
-                  <th>₹ {description}</th>
 
                   <th colSpan={2}></th>
                 </tr>

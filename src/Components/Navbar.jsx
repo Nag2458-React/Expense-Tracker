@@ -29,7 +29,9 @@ const Navbar = () => {
         {/* USER NAME */}
 
         <div className="text-white">
-          <h5 className="mb-0">Welcome to {user?.name}</h5>
+          <h5 className="mb-0">
+            Welcome to <span style={{ color: "#e5fb07" }}>{user?.name}</span>
+          </h5>
         </div>
 
         {/* MENU */}
