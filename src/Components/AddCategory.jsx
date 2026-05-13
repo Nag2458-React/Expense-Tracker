@@ -8,6 +8,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
 import { toast } from "react-toastify";
@@ -17,7 +18,10 @@ const AddCategory = () => {
 
   const [categories, setCategories] = useState([]);
 
-  // Fetch Categories
+  const [editId, setEditId] = useState(null);
+
+  // FETCH CATEGORIES
+
   const fetchCategories = async () => {
     const querySnapshot = await getDocs(collection(db, "categories"));
 
@@ -33,7 +37,8 @@ const AddCategory = () => {
     fetchCategories();
   }, []);
 
-  // Submit Category
+  // ADD / UPDATE CATEGORY
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,11 +48,27 @@ const AddCategory = () => {
     }
 
     try {
-      await addDoc(collection(db, "categories"), {
-        title: category,
-      });
+      // UPDATE
 
-      toast.success("Category Added Successfully");
+      if (editId) {
+        const updateRef = doc(db, "categories", editId);
+
+        await updateDoc(updateRef, {
+          title: category,
+        });
+
+        toast.success("Category Updated Successfully");
+
+        setEditId(null);
+      } else {
+        // ADD
+
+        await addDoc(collection(db, "categories"), {
+          title: category,
+        });
+
+        toast.success("Category Added Successfully");
+      }
 
       setCategory("");
 
@@ -57,7 +78,8 @@ const AddCategory = () => {
     }
   };
 
-  // Delete Category
+  // DELETE CATEGORY
+
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, "categories", id));
 
@@ -66,15 +88,25 @@ const AddCategory = () => {
     fetchCategories();
   };
 
+  // EDIT CATEGORY
+
+  const handleEdit = (cat) => {
+    setCategory(cat.title);
+
+    setEditId(cat.id);
+  };
+
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
-        <div className="col-md-6">
-          {/* FORM CARD */}
+        {/* FORM */}
 
+        <div className="col-md-6">
           <div className="card shadow mb-4">
             <div className="card-body">
-              <h3 className="text-center mb-4">Add Category</h3>
+              <h3 className="text-center mb-4">
+                {editId ? "Update Category" : "Add Category"}
+              </h3>
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
@@ -89,23 +121,27 @@ const AddCategory = () => {
                   />
                 </div>
 
-                <button className="btn btn-primary w-100">Add Category</button>
+                <button className="btn btn-primary w-100">
+                  {editId ? "Update Category" : "Add Category"}
+                </button>
               </form>
             </div>
           </div>
-
-          {/* TABLE CARD */}
         </div>
+
+        {/* TABLE */}
+
         <div className="col-md-6">
           <div className="card shadow">
             <div className="card-body">
               <h4 className="text-center mb-3">Categories List</h4>
 
               <table className="table table-bordered table-striped">
-                <thead>
+                <thead className="table-dark">
                   <tr>
                     <th>S.No</th>
                     <th>Category Name</th>
+                    <th>Edit</th>
                     <th>Delete</th>
                   </tr>
                 </thead>
@@ -118,19 +154,34 @@ const AddCategory = () => {
 
                         <td>{cat.title}</td>
 
+                        {/* EDIT */}
+
+                        <td>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleEdit(cat)}
+                          >
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+                        </td>
+
+                        {/* DELETE */}
+
                         <td>
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleDelete(cat.id)}
                           >
-                            Delete
+                            <i className="bi bi-trash"></i>
                           </button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={3}>No Categories Found</td>
+                      <td colSpan={4} className="text-center">
+                        No Categories Found
+                      </td>
                     </tr>
                   )}
                 </tbody>

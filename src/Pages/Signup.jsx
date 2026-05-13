@@ -1,10 +1,8 @@
-// Signup.jsx
-
 import React, { useState } from "react";
 
-import { db } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
 
-import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 import { toast } from "react-toastify";
 
@@ -15,7 +13,6 @@ const Signup = () => {
 
   const [data, setData] = useState({
     name: "",
-    username: "",
     email: "",
     password: "",
   });
@@ -31,20 +28,14 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      // FIREBASE DATABASE COLLECTION NAME = users
+      // DEFAULT ROLE USER
 
-      await addDoc(collection(db, "users"), data);
-
-      toast.success("Signup Successfully");
-
-      setData({
-        name: "",
-        username: "",
-        email: "",
-        password: "",
+      await addDoc(collection(db, "users"), {
+        ...data,
+        role: "user",
       });
 
-      // LOGIN PAGE REDIRECT
+      toast.success("Signup Success");
 
       navigate("/login");
     } catch (error) {
@@ -55,90 +46,51 @@ const Signup = () => {
   return (
     <div className="container">
       <div className="row justify-content-center">
-        <div className="col-md-5">
-          <div className="card shadow" style={{ marginTop: "50px" }}>
+        <div className="col-md-4">
+          <div className="card shadow">
             <div className="card-body">
+              <h3 className="text-center mb-4">Signup</h3>
+
               <form onSubmit={handleSubmit}>
-                <h4 className="text-center mb-3">User SignIn</h4>
-
-                <hr />
-
                 <div className="mb-3">
-                  <label>
-                    <i className="bi bi-person-fill me-2"></i>
-                    Name
-                  </label>
-
                   <input
                     type="text"
+                    className="form-control"
                     placeholder="Name"
-                    className="form-control"
                     name="name"
-                    value={data.name}
                     onChange={handleChange}
                     required
                   />
                 </div>
 
                 <div className="mb-3">
-                  <label>
-                    <i className="bi bi-person-fill me-2"></i>
-                    User Name
-                  </label>
-
-                  <input
-                    type="text"
-                    placeholder="User Name"
-                    className="form-control"
-                    name="username"
-                    value={data.username}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label>
-                    <i className="bi bi-envelope-fill me-2"></i>
-                    Email
-                  </label>
-
                   <input
                     type="email"
-                    placeholder="Email"
                     className="form-control"
+                    placeholder="Email"
                     name="email"
-                    value={data.email}
                     onChange={handleChange}
                     required
                   />
                 </div>
 
                 <div className="mb-3">
-                  <label>
-                    <i className="bi bi-lock-fill me-2"></i>
-                    Password
-                  </label>
-
                   <input
                     type="password"
-                    placeholder="Password"
                     className="form-control"
+                    placeholder="Password"
                     name="password"
-                    value={data.password}
                     onChange={handleChange}
                     required
                   />
                 </div>
 
-                <div className="text-center">
-                  <button className="btn btn-primary w-100">SignIn</button>
-                </div>
-
-                <div className="mt-3 text-center">
-                  Already have account ?<Link to="/login"> Login Here</Link>
-                </div>
+                <button className="btn btn-success w-100">Signup</button>
               </form>
+
+              <div className="mt-3 text-center">
+                Already have account ?<Link to="/login"> Login</Link>
+              </div>
             </div>
           </div>
         </div>

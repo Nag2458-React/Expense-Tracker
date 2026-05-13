@@ -1,11 +1,13 @@
+// Login.jsx
+
 import React, { useState } from "react";
 
-import { Link, useNavigate } from "react-router-dom";
-
 import { collection, getDocs } from "firebase/firestore";
-import track from "../assets/track.png";
+
 import { db } from "../firebase";
 
+import { useNavigate, Link } from "react-router-dom";
+import track from "../assets/track.png";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -29,22 +31,24 @@ const Login = () => {
     try {
       const querySnapshot = await getDocs(collection(db, "users"));
 
-      let found = false;
+      let foundUser = null;
 
       querySnapshot.forEach((doc) => {
         const user = doc.data();
 
         if (user.email === data.email && user.password === data.password) {
-          found = true;
+          foundUser = user;
         }
       });
 
-      if (found) {
+      if (foundUser) {
+        localStorage.setItem("user", JSON.stringify(foundUser));
+
         toast.success("Login Success");
 
         navigate("/dashboard");
       } else {
-        toast.error("Invalid Email or Password");
+        toast.error("Invalid Credentials");
       }
     } catch (error) {
       console.log(error);
@@ -53,60 +57,46 @@ const Login = () => {
 
   return (
     <div className="container">
-      <div className="text-center pt-5">
-        <img src={track} alt="track" style={{ width: "150px" }} />
+      <div className="text-center pt-5 pb-3">
+        <img src={track} alt="track" style={{ width: "200px" }} />
       </div>
       <div className="row justify-content-center">
-        <div className="col-md-5">
-          <div className="card shadow" style={{ marginTop: "30px" }}>
+        <div className="col-md-4">
+          <div className="card shadow">
             <div className="card-body">
+              <h3 className="text-center mb-4">Login</h3>
+
               <form onSubmit={handleSubmit}>
-                <h4 className="text-center mb-3">User Login</h4>
-
-                <hr />
-
                 <div className="mb-3">
-                  <label>
-                    <i className="bi bi-envelope-fill me-2"></i>
-                    Email
-                  </label>
-
+                  <lebel>Email</lebel>
                   <input
                     type="email"
-                    placeholder="Email"
                     className="form-control"
+                    placeholder="Email"
                     name="email"
-                    value={data.email}
                     onChange={handleChange}
                     required
                   />
                 </div>
 
                 <div className="mb-3">
-                  <label>
-                    <i className="bi bi-lock-fill me-2"></i>
-                    Password
-                  </label>
-
+                  <lebel>Password</lebel>
                   <input
                     type="password"
-                    placeholder="Password"
                     className="form-control"
+                    placeholder="Password"
                     name="password"
-                    value={data.password}
                     onChange={handleChange}
                     required
                   />
                 </div>
 
-                <div className="text-center">
-                  <button className="btn btn-primary w-100">Login</button>
-                </div>
-
-                <div className="mt-3 text-center">
-                  Don't have account ?<Link to="/signup"> Signup Here</Link>
-                </div>
+                <button className="btn btn-primary w-100">Login</button>
               </form>
+
+              <div className="mt-3 text-center">
+                Don't have account ?<Link to="/signup"> Signup</Link>
+              </div>
             </div>
           </div>
         </div>

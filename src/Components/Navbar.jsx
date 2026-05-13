@@ -1,65 +1,66 @@
+// Navbar.jsx
+
 import React from "react";
+
 import { Link } from "react-router-dom";
-import logs from "../assets/log.png";
+
+import log from "../assets/log.png";
+
 const Navbar = () => {
+  // GET USER DATA FROM LOCALSTORAGE
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+
+    window.location.href = "/login";
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
+        {/* LOGO */}
+
         <Link className="navbar-brand" to="/dashboard">
-          <img src={logs} alt="track" style={{ width: "150px" }} />
+          <img src={log} alt="track" style={{ width: "150px" }} />
         </Link>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        {/* USER NAME */}
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+        <div className="text-white">
+          <h5 className="mb-0">Welcome to {user?.name}</h5>
+        </div>
+
+        {/* MENU */}
+
+        <div>
+          <ul className="navbar-nav ms-auto d-flex flex-row gap-3 align-items-center">
             <li className="nav-item">
               <Link className="nav-link" to="/dashboard">
-                <i className="bi bi-speedometer2 me-2"></i>
                 Dashboard
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/add-income">
-                <i className="bi bi-wallet2 me-2"></i>
-                Add Income
-              </Link>
-            </li>
+            {/* ADMIN ONLY */}
+
+            {user?.role === "admin" && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/add-income">
+                  Add Amount
+                </Link>
+              </li>
+            )}
+
+            {/* LOGOUT */}
 
             <li className="nav-item">
-              <Link className="nav-link" to="/add-expense">
-                <i className="bi bi-cash-stack me-2"></i>
-                Add Expense
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/add-category">
-                <i className="bi bi-tags me-2"></i>
-                Add Category
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/view-expenses">
-                <i className="bi bi-bar-chart-line me-2"></i>
-                View Expenses
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">
-                <i className="bi bi-box-arrow-right me-2"></i>
+              <button
+                className="btn btn-danger btn-sm logs"
+                onClick={handleLogout}
+              >
                 Logout
-              </Link>
+              </button>
             </li>
           </ul>
         </div>
