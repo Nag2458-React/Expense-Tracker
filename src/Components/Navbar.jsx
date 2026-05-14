@@ -61,7 +61,7 @@ const Navbar = () => {
                 className="btn btn-danger btn-sm logs"
                 onClick={handleLogout}
               >
-                Logouts
+                Logout
               </button>
             </li>
           </ul>
