@@ -21,6 +21,9 @@ import AddIncome from "./Components/AddIncome";
 import Signup from "./Pages/Signup";
 
 import Login from "./Pages/Login";
+import { FlatOwners } from "./Components/FlatOwners";
+
+
 
 const PrivateRoute = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -62,6 +65,17 @@ const App = () => {
               <Navbar />
 
               <AddIncome />
+            </PrivateRoute>
+          }
+        />
+      
+          <Route
+          path="/flat"
+          element={
+            <PrivateRoute>
+              <Navbar />
+
+              <FlatOwners />
             </PrivateRoute>
           }
         />

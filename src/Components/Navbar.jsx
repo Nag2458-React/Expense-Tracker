@@ -53,7 +53,11 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-
+ <li className="nav-item">
+              <Link className="nav-link" to="/flat">
+                Flat Owners
+              </Link>
+            </li>
             {/* LOGOUT */}
 
             <li className="nav-item">

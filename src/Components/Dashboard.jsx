@@ -2,36 +2,72 @@ import React, { useEffect, useState } from "react";
 
 import { db } from "../firebase";
 
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+} from "firebase/firestore";
 
 const Dashboard = () => {
-  const [totalApartments, setTotalApartments] = useState(0);
 
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalApartments, setTotalApartments] =
+    useState(0);
 
-  const [waterTotal, setWaterTotal] = useState(0);
+  const [totalAmount, setTotalAmount] =
+    useState(0);
 
-  const [electricityTotal, setElectricityTotal] = useState(0);
+  const [waterTotal, setWaterTotal] =
+    useState(0);
 
-  const [maintainanceTotal, setMaintainanceTotal] = useState(0);
+  const [electricityTotal, setElectricityTotal] =
+    useState(0);
 
-  const [garbageTotal, setGarbageTotal] = useState(0);
+  const [maintainanceTotal, setMaintainanceTotal] =
+    useState(0);
 
-  const [otherTotal, setOtherTotal] = useState(0);
+  const [garbageTotal, setGarbageTotal] =
+    useState(0);
 
-  const [apartments, setApartments] = useState([]);
+  const [otherTotal, setOtherTotal] =
+    useState(0);
 
-  const [allData, setAllData] = useState([]);
+  // TOTAL FLATS FROM flat_owners
+
+  const [flatOwnersCount, setFlatOwnersCount] =
+    useState(0);
+
+  const [apartments, setApartments] =
+    useState([]);
+
+  const [allData, setAllData] =
+    useState([]);
 
   // MONTH SELECT
 
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedMonth, setSelectedMonth] =
+    useState("");
+
+  // SEARCH
+
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
+  // PAGINATION
+
+  const [currentPage, setCurrentPage] =
+    useState(1);
+
+  const itemsPerPage = 10;
 
   // FETCH DATA
 
   const fetchApartments = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "apartment_amounts"));
+
+      // APARTMENT AMOUNTS
+
+      const querySnapshot = await getDocs(
+        collection(db, "apartment_amounts")
+      );
 
       const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -40,11 +76,18 @@ const Dashboard = () => {
 
       setAllData(data);
 
-      // FIRST TIME ALL DATA DISPLAY
-
       calculateTotals(data);
 
       setApartments(data);
+
+      // FLAT OWNERS COUNT
+
+      const flatSnapshot = await getDocs(
+        collection(db, "flat_owners")
+      );
+
+      setFlatOwnersCount(flatSnapshot.size);
+
     } catch (error) {
       console.log(error);
     }
@@ -54,9 +97,10 @@ const Dashboard = () => {
     fetchApartments();
   }, []);
 
-  // TOTAL CALCULATION FUNCTION
+  // TOTAL CALCULATION
 
   const calculateTotals = (data) => {
+
     let total = 0;
 
     let water = 0;
@@ -70,17 +114,25 @@ const Dashboard = () => {
     let other = 0;
 
     data.forEach((item) => {
+
       total += Number(item.amount || 0);
 
       water += Number(item.waterBill || 0);
 
-      electricity += Number(item.electricityBill || 0);
+      electricity += Number(
+        item.electricityBill || 0
+      );
 
-      maintainance += Number(item.maintainanceBill || 0);
+      maintainance += Number(
+        item.maintainanceBill || 0
+      );
 
-      garbage += Number(item.garbageBill || 0);
+      garbage += Number(
+        item.garbageBill || 0
+      );
 
       other += Number(item.otherBill || 0);
+
     });
 
     setTotalApartments(data.length);
@@ -101,13 +153,15 @@ const Dashboard = () => {
   // MONTH FILTER
 
   const handleMonthChange = (e) => {
+
     const monthValue = e.target.value;
 
     setSelectedMonth(monthValue);
 
-    // IF MONTH EMPTY => SHOW ALL DATA
+    setCurrentPage(1);
 
     if (monthValue === "") {
+
       setApartments(allData);
 
       calculateTotals(allData);
@@ -115,28 +169,72 @@ const Dashboard = () => {
       return;
     }
 
-    // FILTER MONTH DATA
+    const filteredData = allData.filter(
+      (item) => {
 
-    const filteredData = allData.filter((item) => {
-      if (!item.billDate) return false;
+        if (!item.billDate) return false;
 
-      // billDate format => yyyy-mm-dd
+        const formattedMonth =
+          item.billDate.slice(0, 7);
 
-      const formattedMonth = item.billDate.slice(0, 7);
-
-      return formattedMonth === monthValue;
-    });
+        return formattedMonth === monthValue;
+      }
+    );
 
     setApartments(filteredData);
 
     calculateTotals(filteredData);
   };
 
+  // SEARCH FILTER
+
+  const filteredApartments =
+    apartments.filter((item) => {
+
+      return (
+        item.owner
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+
+        item.flat
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+
+        item.billDate
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+
+        item.description
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+    });
+
+  // PAGINATION
+
+  const totalPages = Math.ceil(
+    filteredApartments.length / itemsPerPage
+  );
+
+  const indexOfLastItem =
+    currentPage * itemsPerPage;
+
+  const indexOfFirstItem =
+    indexOfLastItem - itemsPerPage;
+
+  const currentItems =
+    filteredApartments.slice(
+      indexOfFirstItem,
+      indexOfLastItem
+    );
+
   return (
     <div className="container mt-5">
+
       {/* TOP CARDS */}
 
       <div className="row mb-4">
+
         {/* TOTAL FLATS */}
 
         <div className="col-md-3 mb-3">
@@ -150,7 +248,7 @@ const Dashboard = () => {
           >
             <h4>Total Flats</h4>
 
-            <h1>{totalApartments}</h1>
+            <h1>{flatOwnersCount}</h1>
           </div>
         </div>
 
@@ -204,11 +302,13 @@ const Dashboard = () => {
             <h1>₹ {electricityTotal}</h1>
           </div>
         </div>
+
       </div>
 
       {/* SECOND ROW */}
 
       <div className="row mb-4">
+
         {/* MAINTAINANCE */}
 
         <div className="col-md-3 mb-3">
@@ -259,21 +359,43 @@ const Dashboard = () => {
             <h1>₹ {otherTotal}</h1>
           </div>
         </div>
+
+        {/* TOTAL RECORDS */}
+
+        <div className="col-md-3 mb-3">
+          <div
+            className="card shadow text-center p-3"
+            style={{
+              background: "#00ffe6",
+              color: "#000",
+              borderRadius: "10px",
+            }}
+          >
+            <h4>Total Records</h4>
+
+            <h1>{totalApartments}</h1>
+          </div>
+        </div>
+
       </div>
 
-      {/* MONTH FILTER */}
+      {/* FILTERS */}
 
-      <div className="row mb-2">
-        <div className="col-md-6">
-          <label
-            className="fw-bold mb-2"
-            style={{ color: "#fff", fontWeight: "bold" }}
-          >
+      <div className="row mb-3">
+
+        {/* MONTH */}
+
+        <div className="col-md-3">
+
+          <label className="fw-bold mb-2">
             Select Month Report
           </label>
 
           <div className="input-group">
-            <span className="input-group-text">Select Month</span>
+
+            <span className="input-group-text">
+              Select Month
+            </span>
 
             <input
               style={{ width: "47%" }}
@@ -282,9 +404,18 @@ const Dashboard = () => {
               value={selectedMonth}
               onChange={handleMonthChange}
             />
+
           </div>
+
         </div>
-        <div className="col-md-6" style={{ textAlign: "right" }}>
+
+        {/* BUTTON */}
+
+        <div
+          className="col-md-9"
+          style={{ textAlign: "right" }}
+        >
+
           <button
             style={{
               background: "#576000",
@@ -293,103 +424,170 @@ const Dashboard = () => {
             }}
             className="btn btn-dark"
             onClick={() => {
+
               setSelectedMonth("");
+
+              setSearchTerm("");
 
               setApartments(allData);
 
               calculateTotals(allData);
+
+              setCurrentPage(1);
+
             }}
           >
             Show All Data
           </button>
+
         </div>
+
       </div>
 
       {/* TABLE */}
 
       <div className="card shadow">
+
         <div className="card-body">
-          <h3 className="text-center mb-4">Apartment Amount Details</h3>
+
+          {/* TABLE TOP */}
+
+          <div className="d-flex justify-content-between align-items-center mb-3">
+
+            <h3 className="m-0">
+              Apartment Amount Details
+            </h3>
+
+            {/* SEARCH */}
+
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search..."
+              style={{ width: "250px" }}
+              value={searchTerm}
+              onChange={(e) => {
+
+                setSearchTerm(e.target.value);
+
+                setCurrentPage(1);
+
+              }}
+            />
+
+          </div>
+
+          {/* TABLE */}
 
           <div className="table-responsive">
+
             <table className="table table-bordered table-striped">
+
               <thead className="table-dark">
                 <tr>
                   <th>S.No</th>
-
                   <th>Owner</th>
-
                   <th>Flat</th>
-
                   <th>Bill Date</th>
-
                   <th>Water</th>
-
                   <th>Electricity</th>
-
                   <th>Maintainance</th>
-
                   <th>Garbage</th>
-
                   <th>Other</th>
-
                   <th>Total</th>
-
                   <th>Description</th>
-
                   <th>Time</th>
                 </tr>
               </thead>
 
               <tbody>
-                {apartments.length > 0 ? (
-                  apartments.map((item, index) => (
-                    <tr key={item.id}>
-                      <td>{index + 1}</td>
 
-                      <td>{item.owner}</td>
+                {currentItems.length > 0 ? (
 
-                      <td>{item.flat}</td>
+                  currentItems.map(
+                    (item, index) => (
+                      <tr key={item.id}>
 
-                      <td>{item.billDate}</td>
+                        <td>
+                          {indexOfFirstItem +
+                            index +
+                            1}
+                        </td>
 
-                      <td>₹ {item.waterBill}</td>
+                        <td>{item.owner}</td>
 
-                      <td>₹ {item.electricityBill}</td>
+                        <td>{item.flat}</td>
 
-                      <td>₹ {item.maintainanceBill}</td>
+                        <td>{item.billDate}</td>
 
-                      <td>₹ {item.garbageBill}</td>
+                        <td>
+                          ₹ {item.waterBill}
+                        </td>
 
-                      <td>₹ {item.otherBill}</td>
+                        <td>
+                          ₹ {item.electricityBill}
+                        </td>
 
-                      <td className="fw-bold text-success">₹ {item.amount}</td>
+                        <td>
+                          ₹ {item.maintainanceBill}
+                        </td>
 
-                      <td>{item.description}</td>
+                        <td>
+                          ₹ {item.garbageBill}
+                        </td>
 
-                      <td>{item.time}</td>
-                    </tr>
-                  ))
+                        <td>
+                          ₹ {item.otherBill}
+                        </td>
+
+                        <td className="fw-bold text-success">
+                          ₹ {item.amount}
+                        </td>
+
+                        <td>
+                          {item.description}
+                        </td>
+
+                        <td>{item.time}</td>
+
+                      </tr>
+                    )
+                  )
+
                 ) : (
+
                   <tr>
-                    <td colSpan={12} className="text-center">
+                    <td
+                      colSpan={12}
+                      className="text-center"
+                    >
                       No Data Found
                     </td>
                   </tr>
+
                 )}
+
               </tbody>
 
               {/* FOOTER */}
 
               <tfoot className="table-dark">
+
                 <tr>
-                  <th colSpan={4}>Grand Total</th>
+
+                  <th colSpan={4}>
+                    Grand Total
+                  </th>
 
                   <th>₹ {waterTotal}</th>
 
-                  <th>₹ {electricityTotal}</th>
+                  <th>
+                    ₹ {electricityTotal}
+                  </th>
 
-                  <th>₹ {maintainanceTotal}</th>
+                  <th>
+                    ₹ {maintainanceTotal}
+                  </th>
 
                   <th>₹ {garbageTotal}</th>
 
@@ -398,12 +596,108 @@ const Dashboard = () => {
                   <th>₹ {totalAmount}</th>
 
                   <th colSpan={2}></th>
+
                 </tr>
+
               </tfoot>
+
             </table>
+
           </div>
+
+          {/* PAGINATION */}
+
+          <div className="d-flex justify-content-center mt-3">
+
+            <nav>
+
+              <ul className="pagination">
+
+                {/* PREVIOUS */}
+
+                <li
+                  className={`page-item ${
+                    currentPage === 1
+                      ? "disabled"
+                      : ""
+                  }`}
+                >
+
+                  <button
+                    className="page-link"
+                    onClick={() =>
+                      setCurrentPage(
+                        currentPage - 1
+                      )
+                    }
+                  >
+                    Previous
+                  </button>
+
+                </li>
+
+                {/* PAGE NUMBERS */}
+
+                {[...Array(totalPages)].map(
+                  (_, index) => (
+                    <li
+                      key={index}
+                      className={`page-item ${
+                        currentPage ===
+                        index + 1
+                          ? "active"
+                          : ""
+                      }`}
+                    >
+
+                      <button
+                        className="page-link"
+                        onClick={() =>
+                          setCurrentPage(
+                            index + 1
+                          )
+                        }
+                      >
+                        {index + 1}
+                      </button>
+
+                    </li>
+                  )
+                )}
+
+                {/* NEXT */}
+
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages
+                      ? "disabled"
+                      : ""
+                  }`}
+                >
+
+                  <button
+                    className="page-link"
+                    onClick={() =>
+                      setCurrentPage(
+                        currentPage + 1
+                      )
+                    }
+                  >
+                    Next
+                  </button>
+
+                </li>
+
+              </ul>
+
+            </nav>
+
+          </div>
+
         </div>
+
       </div>
+
     </div>
   );
 };
