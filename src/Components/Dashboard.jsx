@@ -232,7 +232,7 @@ const Dashboard = () => {
     <div className="container mt-5 pb-5">
 
       {/* TOP CARDS */}
-
+<div className="">
       <div className="row mb-4">
 
         {/* TOTAL FLATS */}
@@ -378,14 +378,14 @@ const Dashboard = () => {
         </div>
 
       </div>
-
+</div>
       {/* FILTERS */}
 
-      <div className="row mb-3">
+      <div className="row">
 
         {/* MONTH */}
 
-        <div className="col-md-3">
+        <div className="col-md-3 mb-2">
 
           <label className="fw-bold mb-2" style={{color:"#fff"}}>
             Select Month Report

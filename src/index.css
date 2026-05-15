@@ -204,3 +204,12 @@ color: #fff !important;
 .card-body.myc .card-body {
     padding: 5px;
 }
+.myc .bg-danger{
+    background-color: rgb(220 53 69) !important;
+    color: #ffffff;
+}
+.myc .bg-success{
+      background-color: rgb(25 135 84) !important;
+    color: #ffffff;
+
+}

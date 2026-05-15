@@ -194,11 +194,11 @@ export const MyInfo = () => {
 
         <div className="col-md-12">
 
-          <div className="card shadow-lg border-0">
+          <div className="card shadow-lg border-0" style={{background:"transparent"}}>
 
             <div className="card-header  text-center">
 
-              <h3 className="mb-0">
+              <h3 className="mb-0" style={{color:"#000",background:"#fff",padding:"6px",borderRadius:"5px"}}>
                 My Information
               </h3>
 
