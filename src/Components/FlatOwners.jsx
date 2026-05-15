@@ -8,6 +8,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  updateDoc,
   query,
   orderBy,
 } from "firebase/firestore";
@@ -19,6 +20,12 @@ export const FlatOwners = () => {
   const [formData, setFormData] = useState({
     flat: "",
     owner: "",
+    billDate: "",
+    waterBill: "",
+    electricityBill: "",
+    maintainanceBill: "",
+    garbageBill: "",
+    otherBill: "",
   });
 
   const [flatData, setFlatData] = useState([]);
@@ -35,6 +42,11 @@ export const FlatOwners = () => {
 
   const itemsPerPage = 10;
 
+  // EDIT
+
+  const [editId, setEditId] =
+    useState(null);
+
   // HANDLE CHANGE
 
   const handleChange = (e) => {
@@ -47,33 +59,34 @@ export const FlatOwners = () => {
     });
   };
 
-  // FETCH DATA WITH SORTING
+  // FETCH DATA
 
   const fetchData = async () => {
 
     try {
-
-      // FIRESTORE QUERY
 
       const q = query(
         collection(db, "flat_owners"),
         orderBy("flat", "asc")
       );
 
-      const querySnapshot = await getDocs(q);
+      const querySnapshot =
+        await getDocs(q);
 
-      let result = querySnapshot.docs.map(
-        (doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })
-      );
+      let result =
+        querySnapshot.docs.map(
+          (doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })
+        );
 
       // PERFECT NUMBER SORT
 
       result.sort(
         (a, b) =>
-          Number(a.flat) - Number(b.flat)
+          Number(a.flat) -
+          Number(b.flat)
       );
 
       setFlatData(result);
@@ -95,23 +108,56 @@ export const FlatOwners = () => {
 
     try {
 
-      await addDoc(
-        collection(db, "flat_owners"),
-        {
-          flat: formData.flat,
-          owner: formData.owner,
-        }
-      );
+      // UPDATE
 
-      toast.success(
-        "Flat Owner Added Successfully"
-      );
+      if (editId) {
 
-      // RESET FORM
+        const updateRef = doc(
+          db,
+          "flat_owners",
+          editId
+        );
+
+        await updateDoc(updateRef, {
+          ...formData,
+        });
+
+        toast.success(
+          "Updated Successfully"
+        );
+
+        setEditId(null);
+
+      } else {
+
+        // ADD
+
+        await addDoc(
+          collection(
+            db,
+            "flat_owners"
+          ),
+          {
+            ...formData,
+          }
+        );
+
+        toast.success(
+          "Added Successfully"
+        );
+      }
+
+      // RESET
 
       setFormData({
         flat: "",
         owner: "",
+        billDate: "",
+        waterBill: "",
+        electricityBill: "",
+        maintainanceBill: "",
+        garbageBill: "",
+        otherBill: "",
       });
 
       fetchData();
@@ -142,10 +188,33 @@ export const FlatOwners = () => {
     }
   };
 
+  // EDIT
+
+  const handleEdit = (item) => {
+
+    setFormData({
+      flat: item.flat,
+      owner: item.owner,
+      billDate: item.billDate,
+      waterBill:
+        item.waterBill,
+      electricityBill:
+        item.electricityBill,
+      maintainanceBill:
+        item.maintainanceBill,
+      garbageBill:
+        item.garbageBill,
+      otherBill:
+        item.otherBill,
+    });
+
+    setEditId(item.id);
+  };
+
   // SEARCH FILTER
 
-  const filteredData = flatData.filter(
-    (item) => {
+  const filteredData =
+    flatData.filter((item) => {
 
       return (
         item.flat
@@ -161,20 +230,21 @@ export const FlatOwners = () => {
             searchTerm.toLowerCase()
           )
       );
-    }
-  );
+    });
 
   // PAGINATION
 
   const totalPages = Math.ceil(
-    filteredData.length / itemsPerPage
+    filteredData.length /
+      itemsPerPage
   );
 
   const indexOfLastItem =
     currentPage * itemsPerPage;
 
   const indexOfFirstItem =
-    indexOfLastItem - itemsPerPage;
+    indexOfLastItem -
+    itemsPerPage;
 
   const currentItems =
     filteredData.slice(
@@ -195,13 +265,15 @@ export const FlatOwners = () => {
             Flat Owner Master
           </h3>
 
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={handleSubmit}
+          >
 
             <div className="row">
 
-              {/* FLAT NUMBER */}
+              {/* FLAT */}
 
-              <div className="col-md-5">
+              <div className="col-md-3">
 
                 <div className="mb-3">
 
@@ -214,8 +286,12 @@ export const FlatOwners = () => {
                     className="form-control"
                     placeholder="Enter Flat Number"
                     name="flat"
-                    value={formData.flat}
-                    onChange={handleChange}
+                    value={
+                      formData.flat
+                    }
+                    onChange={
+                      handleChange
+                    }
                     required
                   />
 
@@ -223,9 +299,9 @@ export const FlatOwners = () => {
 
               </div>
 
-              {/* OWNER NAME */}
+              {/* OWNER */}
 
-              <div className="col-md-5">
+              <div className="col-md-3">
 
                 <div className="mb-3">
 
@@ -238,10 +314,216 @@ export const FlatOwners = () => {
                     className="form-control"
                     placeholder="Enter Owner Name"
                     name="owner"
-                    value={formData.owner}
-                    onChange={handleChange}
+                    value={
+                      formData.owner
+                    }
+                    onChange={
+                      handleChange
+                    }
                     required
                   />
+
+                </div>
+
+              </div>
+
+              {/* DATE */}
+
+              <div className="col-md-3">
+
+                <div className="mb-3">
+
+                  <label className="fw-bold">
+                    Bill Date
+                  </label>
+
+                  <input
+                    type="date"
+                    className="form-control"
+                    name="billDate"
+                    value={
+                      formData.billDate
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    required
+                  />
+
+                </div>
+
+              </div>
+
+              {/* WATER */}
+
+              <div className="col-md-3">
+
+                <div className="mb-3">
+
+                  <label className="fw-bold">
+                    Water Bill
+                  </label>
+
+                  <select
+                    className="form-select"
+                    name="waterBill"
+                    value={
+                      formData.waterBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  >
+  <option>--Select--</option>
+                    <option>
+                      Pending
+                    </option>
+
+                    <option>
+                      Active
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              {/* ELECTRICITY */}
+
+              <div className="col-md-3">
+
+                <div className="mb-3">
+
+                  <label className="fw-bold">
+                    Electricity Bill
+                  </label>
+
+                  <select
+                    className="form-select"
+                    name="electricityBill"
+                    value={
+                      formData.electricityBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  >
+                    <option>--Select--</option>
+                    <option>
+                      Pending
+                    </option>
+
+                    <option>
+                      Active
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              {/* MAINTAINANCE */}
+
+              <div className="col-md-3">
+
+                <div className="mb-3">
+
+                  <label className="fw-bold">
+                    Maintainance Bill
+                  </label>
+
+                  <select
+                    className="form-select"
+                    name="maintainanceBill"
+                    value={
+                      formData.maintainanceBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  >
+  <option>--Select--</option>
+                    <option>
+                      Pending
+                    </option>
+
+                    <option>
+                      Active
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              {/* GARBAGE */}
+
+              <div className="col-md-3">
+
+                <div className="mb-3">
+
+                  <label className="fw-bold">
+                    Garbage Bill
+                  </label>
+
+                  <select
+                    className="form-select"
+                    name="garbageBill"
+                    value={
+                      formData.garbageBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  >
+  <option>--Select--</option>
+                    <option>
+                      Pending
+                    </option>
+
+                    <option>
+                      Active
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              {/* OTHER */}
+
+              <div className="col-md-3">
+
+                <div className="mb-3">
+
+                  <label className="fw-bold">
+                    Other Bill
+                  </label>
+
+                  <select
+                    className="form-select"
+                    name="otherBill"
+                    value={
+                      formData.otherBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  >
+  <option>--Select--</option>
+                    <option>
+                      Pending
+                    </option>
+
+                    <option>
+                      Active
+                    </option>
+
+                  </select>
 
                 </div>
 
@@ -255,14 +537,19 @@ export const FlatOwners = () => {
 
                   <label
                     style={{
-                      visibility: "hidden",
+                      visibility:
+                        "hidden",
                     }}
                   >
                     Submit
                   </label>
 
                   <button className="btn btn-success w-100">
-                    Submit
+
+                    {editId
+                      ? "Update"
+                      : "Submit"}
+
                   </button>
 
                 </div>
@@ -283,7 +570,7 @@ export const FlatOwners = () => {
 
         <div className="card-body">
 
-          {/* TOP SECTION */}
+          {/* TOP */}
 
           <div className="d-flex justify-content-between align-items-center mb-3">
 
@@ -291,13 +578,13 @@ export const FlatOwners = () => {
               Flat Owner List
             </h3>
 
-            {/* SEARCH */}
-
             <input
               type="text"
               className="form-control"
-              placeholder="Search Flat / Owner"
-              style={{ width: "250px" }}
+              placeholder="Search..."
+              style={{
+                width: "250px",
+              }}
               value={searchTerm}
               onChange={(e) => {
 
@@ -324,9 +611,23 @@ export const FlatOwners = () => {
 
                   <th>S.No</th>
 
-                  <th>Flat Number</th>
+                  <th>Flat</th>
 
-                  <th>Owner Name</th>
+                  <th>Owner</th>
+
+                  <th>Date</th>
+
+                  <th>Water</th>
+
+                  <th>Electricity</th>
+
+                  <th>Maintainance</th>
+
+                  <th>Garbage</th>
+
+                  <th>Other</th>
+
+                  <th>Edit</th>
 
                   <th>Delete</th>
 
@@ -336,12 +637,18 @@ export const FlatOwners = () => {
 
               <tbody>
 
-                {currentItems.length > 0 ? (
+                {currentItems.length >
+                0 ? (
 
                   currentItems.map(
-                    (item, index) => (
+                    (
+                      item,
+                      index
+                    ) => (
 
-                      <tr key={item.id}>
+                      <tr
+                        key={item.id}
+                      >
 
                         <td>
                           {indexOfFirstItem +
@@ -356,6 +663,106 @@ export const FlatOwners = () => {
                         <td>
                           {item.owner}
                         </td>
+
+                        <td>
+                          {
+                            item.billDate
+                          }
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.waterBill ===
+                              "Active"
+                                ? "bg-success"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {
+                              item.waterBill
+                            }
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.electricityBill ===
+                              "Active"
+                                ? "bg-success"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {
+                              item.electricityBill
+                            }
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.maintainanceBill ===
+                              "Active"
+                                ? "bg-success"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {
+                              item.maintainanceBill
+                            }
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.garbageBill ===
+                              "Active"
+                                ? "bg-success"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {
+                              item.garbageBill
+                            }
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`badge ${
+                              item.otherBill ===
+                              "Active"
+                                ? "bg-success"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {
+                              item.otherBill
+                            }
+                          </span>
+                        </td>
+
+                        {/* EDIT */}
+
+                        <td>
+
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() =>
+                              handleEdit(
+                                item
+                              )
+                            }
+                          >
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+
+                        </td>
+
+                        {/* DELETE */}
 
                         <td>
 
@@ -381,7 +788,7 @@ export const FlatOwners = () => {
                   <tr>
 
                     <td
-                      colSpan={4}
+                      colSpan={11}
                       className="text-center"
                     >
                       No Data Found
@@ -409,7 +816,8 @@ export const FlatOwners = () => {
 
                 <li
                   className={`page-item ${
-                    currentPage === 1
+                    currentPage ===
+                    1
                       ? "disabled"
                       : ""
                   }`}
@@ -419,7 +827,8 @@ export const FlatOwners = () => {
                     className="page-link"
                     onClick={() =>
                       setCurrentPage(
-                        currentPage - 1
+                        currentPage -
+                          1
                       )
                     }
                   >
@@ -428,16 +837,21 @@ export const FlatOwners = () => {
 
                 </li>
 
-                {/* PAGE NUMBERS */}
+                {/* PAGE */}
 
-                {[...Array(totalPages)].map(
+                {[...Array(
+                  totalPages
+                )].map(
                   (_, index) => (
 
                     <li
-                      key={index}
+                      key={
+                        index
+                      }
                       className={`page-item ${
                         currentPage ===
-                        index + 1
+                        index +
+                          1
                           ? "active"
                           : ""
                       }`}
@@ -447,11 +861,13 @@ export const FlatOwners = () => {
                         className="page-link"
                         onClick={() =>
                           setCurrentPage(
-                            index + 1
+                            index +
+                              1
                           )
                         }
                       >
-                        {index + 1}
+                        {index +
+                          1}
                       </button>
 
                     </li>
@@ -473,7 +889,8 @@ export const FlatOwners = () => {
                     className="page-link"
                     onClick={() =>
                       setCurrentPage(
-                        currentPage + 1
+                        currentPage +
+                          1
                       )
                     }
                   >

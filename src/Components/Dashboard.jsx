@@ -229,7 +229,7 @@ const Dashboard = () => {
     );
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5 pb-5">
 
       {/* TOP CARDS */}
 
@@ -246,7 +246,7 @@ const Dashboard = () => {
               borderRadius: "10px",
             }}
           >
-            <h4>Total Flats</h4>
+            <h4>Total Flat Owners</h4>
 
             <h1>{flatOwnersCount}</h1>
           </div>
@@ -387,7 +387,7 @@ const Dashboard = () => {
 
         <div className="col-md-3">
 
-          <label className="fw-bold mb-2">
+          <label className="fw-bold mb-2" style={{color:"#fff"}}>
             Select Month Report
           </label>
 
@@ -488,7 +488,7 @@ const Dashboard = () => {
                   <th>S.No</th>
                   <th>Owner</th>
                   <th>Flat</th>
-                  <th>Bill Date</th>
+                  <th style={{width: "110px"}}>Bill Date</th>
                   <th>Water</th>
                   <th>Electricity</th>
                   <th>Maintainance</th>

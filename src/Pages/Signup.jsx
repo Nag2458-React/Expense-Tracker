@@ -7,7 +7,7 @@ import { db } from "../firebase";
 import { toast } from "react-toastify";
 
 import { Link, useNavigate } from "react-router-dom";
-
+import track from "../assets/track.png";
 const Signup = () => {
   const navigate = useNavigate();
 
@@ -45,6 +45,9 @@ const Signup = () => {
 
   return (
     <div className="container">
+      <div className="text-center pt-5 pb-3">
+              <img src={track} alt="track" style={{ width: "200px" }} />
+            </div>
       <div className="row justify-content-center">
         <div className="col-md-4">
           <div className="card shadow">
