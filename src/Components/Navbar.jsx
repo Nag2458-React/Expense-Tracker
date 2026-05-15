@@ -7,11 +7,15 @@ import { Link } from "react-router-dom";
 import log from "../assets/log.png";
 
 const Navbar = () => {
-  // GET USER DATA FROM LOCALSTORAGE
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  // GET LOGIN USER
+
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
 
   const handleLogout = () => {
+
     localStorage.removeItem("user");
 
     window.location.href = "/login";
@@ -19,45 +23,103 @@ const Navbar = () => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+
       <div className="container">
+
         {/* LOGO */}
 
-        <Link className="navbar-brand" to="/dashboard">
-          <img src={log} alt="track" style={{ width: "150px" }} />
+        <Link
+          className="navbar-brand"
+          to="/dashboard"
+        >
+          <img
+            src={log}
+            alt="track"
+            style={{ width: "150px" }}
+          />
         </Link>
 
-        {/* USER NAME */}
+        {/* USER DETAILS */}
 
-        <div className="text-white">
-          <h5 className="mb-0">
-            Welcome to <span style={{ color: "#e5fb07" }}>{user?.name}</span>
+        <div className="text-white text-center">
+
+          <h5 className="mb-1">
+            Welcome to{" "}
+            <span
+              style={{
+                color: "#e5fb07",
+              }}
+            >
+              {user?.name}
+            </span>
           </h5>
+
+          {/* FLAT NUMBER */}
+
+          <small
+            style={{
+              color: "#00ffcc",
+              fontWeight: "bold",
+            }}
+          >
+            Flat No : {user?.flat}
+          </small>
+
         </div>
 
         {/* MENU */}
 
         <div>
           <ul className="navbar-nav ms-auto d-flex flex-row gap-3 align-items-center">
+
+            {/* DASHBOARD */}
+
             <li className="nav-item">
-              <Link className="nav-link" to="/dashboard">
+              <Link
+                className="nav-link"
+                to="/dashboard"
+              >
                 Dashboard
               </Link>
             </li>
+
+            {/* USER ONLY */}
+
+            {user?.role !== "admin" && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
+                  to="/info"
+                >
+                  My Info
+                </Link>
+              </li>
+            )}
 
             {/* ADMIN ONLY */}
 
             {user?.role === "admin" && (
               <li className="nav-item">
-                <Link className="nav-link" to="/add-income">
+                <Link
+                  className="nav-link"
+                  to="/add-income"
+                >
                   Add Amount
                 </Link>
               </li>
             )}
- <li className="nav-item">
-              <Link className="nav-link" to="/flat">
+
+            {/* FLAT OWNERS */}
+
+            <li className="nav-item">
+              <Link
+                className="nav-link"
+                to="/flat"
+              >
                 Flat Owners
               </Link>
             </li>
+
             {/* LOGOUT */}
 
             <li className="nav-item">
@@ -68,9 +130,12 @@ const Navbar = () => {
                 Logout
               </button>
             </li>
+
           </ul>
         </div>
+
       </div>
+
     </nav>
   );
 };

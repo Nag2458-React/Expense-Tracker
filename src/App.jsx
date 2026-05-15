@@ -22,6 +22,7 @@ import Signup from "./Pages/Signup";
 
 import Login from "./Pages/Login";
 import { FlatOwners } from "./Components/FlatOwners";
+import { MyInfo } from "./Components/MyInfo";
 
 
 
@@ -52,6 +53,16 @@ const App = () => {
               <Navbar />
 
               <Dashboard />
+            </PrivateRoute>
+          }
+        />
+         <Route
+          path="/info"
+          element={
+            <PrivateRoute>
+              <Navbar />
+
+              <MyInfo />
             </PrivateRoute>
           }
         />
