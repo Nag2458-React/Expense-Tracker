@@ -14,7 +14,6 @@ import {
 import { toast } from "react-toastify";
 
 const AddIncome = () => {
-
   const [data, setData] = useState({
     owner: "",
     flat: "",
@@ -30,46 +29,58 @@ const AddIncome = () => {
     amount: "",
   });
 
-  const [incomeData, setIncomeData] = useState([]);
+  const [incomeData, setIncomeData] =
+    useState([]);
 
-  // FLAT OWNER DATA
-
-  const [flatOwners, setFlatOwners] = useState([]);
+  const [flatOwners, setFlatOwners] =
+    useState([]);
 
   // SEARCH
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] =
+    useState("");
 
   // PAGINATION
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] =
+    useState(1);
 
   const itemsPerPage = 10;
 
-  const [editId, setEditId] = useState(null);
+  // EDIT MODAL
+
+  const [editId, setEditId] =
+    useState(null);
+
+  const [showModal, setShowModal] =
+    useState(false);
 
   // FETCH INCOME DATA
 
   const fetchData = async () => {
     try {
+      const querySnapshot =
+        await getDocs(
+          collection(
+            db,
+            "apartment_amounts"
+          )
+        );
 
-      const querySnapshot = await getDocs(
-        collection(db, "apartment_amounts")
-      );
-
-      let result = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      // SORT FLAT NUMBER
+      let result =
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
       result.sort((a, b) => {
-        return Number(a.flat) - Number(b.flat);
+        return (
+          Number(a.flat) -
+          Number(b.flat)
+        );
       });
 
       setIncomeData(result);
-
     } catch (error) {
       console.log(error);
     }
@@ -77,30 +88,37 @@ const AddIncome = () => {
 
   // FETCH FLAT OWNERS
 
-  const fetchFlatOwners = async () => {
-    try {
+  const fetchFlatOwners =
+    async () => {
+      try {
+        const querySnapshot =
+          await getDocs(
+            collection(
+              db,
+              "flat_owners"
+            )
+          );
 
-      const querySnapshot = await getDocs(
-        collection(db, "flat_owners")
-      );
+        let result =
+          querySnapshot.docs.map(
+            (doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            })
+          );
 
-      let result = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+        result.sort((a, b) => {
+          return (
+            Number(a.flat) -
+            Number(b.flat)
+          );
+        });
 
-      // SORT FLAT NUMBER
-
-      result.sort((a, b) => {
-        return Number(a.flat) - Number(b.flat);
-      });
-
-      setFlatOwners(result);
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
+        setFlatOwners(result);
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   useEffect(() => {
     fetchData();
@@ -110,7 +128,6 @@ const AddIncome = () => {
   // HANDLE CHANGE
 
   const handleChange = (e) => {
-
     const { name, value } = e.target;
 
     let updatedData = {
@@ -118,49 +135,83 @@ const AddIncome = () => {
       [name]: value,
     };
 
-    // AUTO OWNER BIND
+    // AUTO OWNER
 
     if (name === "flat") {
+      const selectedFlat =
+        flatOwners.find(
+          (item) =>
+            String(item.flat) ===
+            String(value)
+        );
 
-      const selectedFlat = flatOwners.find(
-        (item) =>
-          String(item.flat) === String(value)
-      );
-
-      updatedData.owner = selectedFlat
-        ? selectedFlat.owner
-        : "";
+      updatedData.owner =
+        selectedFlat
+          ? selectedFlat.owner
+          : "";
     }
 
     // AUTO TOTAL
 
     const total =
-      Number(updatedData.waterBill || 0) +
-      Number(updatedData.electricityBill || 0) +
-      Number(updatedData.maintainanceBill || 0) +
-      Number(updatedData.garbageBill || 0) +
-      Number(updatedData.otherBill || 0);
+      Number(
+        updatedData.waterBill || 0
+      ) +
+      Number(
+        updatedData.electricityBill ||
+          0
+      ) +
+      Number(
+        updatedData.maintainanceBill ||
+          0
+      ) +
+      Number(
+        updatedData.garbageBill || 0
+      ) +
+      Number(
+        updatedData.otherBill || 0
+      );
 
     updatedData.amount = total;
 
     setData(updatedData);
   };
 
+  // RESET FORM
+
+  const resetForm = () => {
+    setData({
+      owner: "",
+      flat: "",
+      billDate: "",
+
+      waterBill: "",
+      electricityBill: "",
+      maintainanceBill: "",
+      garbageBill: "",
+      otherBill: "",
+
+      description: "",
+      amount: "",
+    });
+
+    setEditId(null);
+
+    setShowModal(false);
+  };
+
   // SUBMIT
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     const time =
       new Date().toLocaleTimeString();
 
     try {
-
       // UPDATE
 
       if (editId) {
-
         const updateRef = doc(
           db,
           "apartment_amounts",
@@ -175,11 +226,7 @@ const AddIncome = () => {
         toast.success(
           "Updated Successfully"
         );
-
-        setEditId(null);
-
       } else {
-
         // ADD
 
         await addDoc(
@@ -198,25 +245,9 @@ const AddIncome = () => {
         );
       }
 
-      // RESET FORM
-
-      setData({
-        owner: "",
-        flat: "",
-        billDate: "",
-
-        waterBill: "",
-        electricityBill: "",
-        maintainanceBill: "",
-        garbageBill: "",
-        otherBill: "",
-
-        description: "",
-        amount: "",
-      });
+      resetForm();
 
       fetchData();
-
     } catch (error) {
       console.log(error);
     }
@@ -225,9 +256,14 @@ const AddIncome = () => {
   // DELETE
 
   const handleDelete = async (id) => {
+    const confirmDelete =
+      window.confirm(
+        "Are you sure want to delete?"
+      );
+
+    if (!confirmDelete) return;
 
     try {
-
       await deleteDoc(
         doc(
           db,
@@ -241,7 +277,6 @@ const AddIncome = () => {
       );
 
       fetchData();
-
     } catch (error) {
       console.log(error);
     }
@@ -250,7 +285,6 @@ const AddIncome = () => {
   // EDIT
 
   const handleEdit = (item) => {
-
     setData({
       owner: item.owner,
       flat: item.flat,
@@ -261,53 +295,54 @@ const AddIncome = () => {
         item.electricityBill,
       maintainanceBill:
         item.maintainanceBill,
-      garbageBill: item.garbageBill,
+      garbageBill:
+        item.garbageBill,
       otherBill: item.otherBill,
 
-      description: item.description,
+      description:
+        item.description,
       amount: item.amount,
     });
 
     setEditId(item.id);
+
+    setShowModal(true);
   };
 
   // SEARCH FILTER
 
-  const filteredData = incomeData.filter(
-    (item) => {
-
+  const filteredData =
+    incomeData.filter((item) => {
       return (
         item.owner
           ?.toLowerCase()
           .includes(
             searchTerm.toLowerCase()
           ) ||
-
         item.flat
-          ?.toLowerCase()
+          ?.toString()
+          .toLowerCase()
           .includes(
             searchTerm.toLowerCase()
           ) ||
-
         item.billDate
           ?.toLowerCase()
           .includes(
             searchTerm.toLowerCase()
           ) ||
-
         item.description
           ?.toLowerCase()
           .includes(
             searchTerm.toLowerCase()
           )
       );
-    }
-  );
+    });
 
   // PAGINATION
 
   const totalPages = Math.ceil(
-    filteredData.length / itemsPerPage
+    filteredData.length /
+      itemsPerPage
   );
 
   const indexOfLastItem =
@@ -324,94 +359,595 @@ const AddIncome = () => {
 
   return (
     <div className="container mt-5">
+      {/* ADD FORM */}
 
-      <div className="row">
+      <div className="card shadow mb-4">
+        <div className="card-body">
+          <h3 className="text-center mb-4">
+            Add Apartment Amount
+          </h3>
 
-        {/* FORM */}
+          <form onSubmit={handleSubmit}>
+            <div className="row">
+              {/* FLAT */}
 
-        <div className="col-md-12 mb-4">
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Flat No
+                  </label>
 
-          <div className="card shadow">
+                  <select
+                    className="form-select"
+                    name="flat"
+                    value={data.flat}
+                    onChange={
+                      handleChange
+                    }
+                    required
+                  >
+                    <option value="">
+                      Select Flat
+                    </option>
 
-            <div className="card-body">
+                    {flatOwners.map(
+                      (item) => (
+                        <option
+                          key={item.id}
+                          value={
+                            item.flat
+                          }
+                        >
+                          {item.flat}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
 
-              <h3 className="text-center mb-4">
+              {/* OWNER */}
 
-                {editId
-                  ? "Update Apartment Amount"
-                  : "Add Apartment Amount"}
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Owner Name
+                  </label>
 
-              </h3>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="owner"
+                    value={data.owner}
+                    readOnly
+                  />
+                </div>
+              </div>
 
-              <form onSubmit={handleSubmit}>
+              {/* BILL DATE */}
 
-                <div className="row">
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Bill Date
+                  </label>
 
-                  {/* FLAT */}
+                  <input
+                    type="date"
+                    className="form-control"
+                    name="billDate"
+                    value={
+                      data.billDate
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    required
+                  />
+                </div>
+              </div>
 
-                  <div className="col-md-3">
+              {/* WATER */}
 
-                    <div className="mb-3">
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Water Bill
+                  </label>
 
-                      <label>Flat No</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="waterBill"
+                    value={
+                      data.waterBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* ELECTRICITY */}
+
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Electricity Bill
+                  </label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="electricityBill"
+                    value={
+                      data.electricityBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* MAINTAINANCE */}
+
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Maintainance Bill
+                  </label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="maintainanceBill"
+                    value={
+                      data.maintainanceBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* GARBAGE */}
+
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Garbage Bill
+                  </label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="garbageBill"
+                    value={
+                      data.garbageBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* OTHER */}
+
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Other Bill
+                  </label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="otherBill"
+                    value={
+                      data.otherBill
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* TOTAL */}
+
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label>
+                    Total Amount
+                  </label>
+
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={data.amount}
+                    readOnly
+                  />
+                </div>
+              </div>
+
+              {/* DESCRIPTION */}
+
+              <div className="col-md-12">
+                <div className="mb-3">
+                  <label>
+                    Description
+                  </label>
+
+                  <textarea
+                    className="form-control"
+                    name="description"
+                    value={
+                      data.description
+                    }
+                    onChange={
+                      handleChange
+                    }
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button className="btn btn-success px-5">
+                Add Amount
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* TABLE */}
+
+      <div className="card shadow">
+        <div className="card-body">
+          <div className="d-flex justify-content-between mb-3">
+            <h3>
+              Apartment Amount History
+            </h3>
+
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search..."
+              style={{
+                width: "250px",
+              }}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(
+                  e.target.value
+                );
+
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+
+          <div className="table-responsive">
+            <table className="table table-bordered table-striped">
+              <thead className="table-dark">
+                <tr>
+                  <th>S.No</th>
+                  <th>Owner</th>
+                  <th>Flat</th>
+                  <th>Date</th>
+                  <th>Water</th>
+                  <th>Electricity</th>
+                  <th>Maintainance</th>
+                  <th>Garbage</th>
+                  <th>Other</th>
+                  <th>Total</th>
+                  <th>Description</th>
+                  <th>Time</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {currentItems.length >
+                0 ? (
+                  currentItems.map(
+                    (
+                      item,
+                      index
+                    ) => (
+                      <tr
+                        key={item.id}
+                      >
+                        <td>
+                          {indexOfFirstItem +
+                            index +
+                            1}
+                        </td>
+
+                        <td>
+                          {item.owner}
+                        </td>
+
+                        <td>
+                          {item.flat}
+                        </td>
+
+                        <td>
+                          {
+                            item.billDate
+                          }
+                        </td>
+
+                        <td>
+                          ₹{" "}
+                          {
+                            item.waterBill
+                          }
+                        </td>
+
+                        <td>
+                          ₹{" "}
+                          {
+                            item.electricityBill
+                          }
+                        </td>
+
+                        <td>
+                          ₹{" "}
+                          {
+                            item.maintainanceBill
+                          }
+                        </td>
+
+                        <td>
+                          ₹{" "}
+                          {
+                            item.garbageBill
+                          }
+                        </td>
+
+                        <td>
+                          ₹{" "}
+                          {
+                            item.otherBill
+                          }
+                        </td>
+
+                        <td className="fw-bold text-success">
+                          ₹{" "}
+                          {item.amount}
+                        </td>
+
+                        <td>
+                          {
+                            item.description
+                          }
+                        </td>
+
+                        <td>
+                          {item.time}
+                        </td>
+
+                        {/* EDIT */}
+
+                        <td>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() =>
+                              handleEdit(
+                                item
+                              )
+                            }
+                          >
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+                        </td>
+
+                        {/* DELETE */}
+
+                        <td>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() =>
+                              handleDelete(
+                                item.id
+                              )
+                            }
+                          >
+                            <i className="bi bi-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  )
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={14}
+                      className="text-center"
+                    >
+                      No Data Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* PAGINATION */}
+
+          <div className="d-flex justify-content-center mt-3">
+            <nav>
+              <ul className="pagination">
+                <li
+                  className={`page-item ${
+                    currentPage === 1
+                      ? "disabled"
+                      : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() =>
+                      setCurrentPage(
+                        currentPage -
+                          1
+                      )
+                    }
+                  >
+                    Previous
+                  </button>
+                </li>
+
+                {[...Array(
+                  totalPages
+                )].map(
+                  (_, index) => (
+                    <li
+                      key={index}
+                      className={`page-item ${
+                        currentPage ===
+                        index + 1
+                          ? "active"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() =>
+                          setCurrentPage(
+                            index + 1
+                          )
+                        }
+                      >
+                        {index + 1}
+                      </button>
+                    </li>
+                  )
+                )}
+
+                <li
+                  className={`page-item ${
+                    currentPage ===
+                    totalPages
+                      ? "disabled"
+                      : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() =>
+                      setCurrentPage(
+                        currentPage +
+                          1
+                      )
+                    }
+                  >
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      {/* EDIT MODAL */}
+
+      {showModal && (
+        <div
+          className="modal d-block"
+          tabIndex="-1"
+          style={{
+            backgroundColor:
+              "rgba(0,0,0,0.5)",
+          }}
+        >
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title">
+                  Edit Apartment Amount
+                </h5>
+
+                <button
+                  type="button"
+                  className="btn-close btn-close-white"
+                  onClick={
+                    resetForm
+                  }
+                ></button>
+              </div>
+
+              <div className="modal-body">
+                <form
+                  onSubmit={
+                    handleSubmit
+                  }
+                >
+                  <div className="row">
+                    {/* FLAT */}
+
+                    <div className="col-md-3 mb-3">
+                      <label>
+                        Flat No
+                      </label>
 
                       <select
                         className="form-select"
                         name="flat"
                         value={data.flat}
-                        onChange={handleChange}
-                        required
+                        onChange={
+                          handleChange
+                        }
                       >
-
-                        <option value="">
-                          Select Flat
-                        </option>
-
                         {flatOwners.map(
-                          (item) => (
+                          (
+                            item
+                          ) => (
                             <option
-                              key={item.id}
-                              value={item.flat}
+                              key={
+                                item.id
+                              }
+                              value={
+                                item.flat
+                              }
                             >
-                              {item.flat}
+                              {
+                                item.flat
+                              }
                             </option>
                           )
                         )}
-
                       </select>
-
                     </div>
 
-                  </div>
+                    {/* OWNER */}
 
-                  {/* OWNER */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
-                        Owner Name
+                        Owner
                       </label>
 
                       <input
                         type="text"
                         className="form-control"
-                        name="owner"
-                        value={data.owner}
+                        value={
+                          data.owner
+                        }
                         readOnly
                       />
-
                     </div>
 
-                  </div>
+                    {/* BILL DATE */}
 
-                  {/* BILL DATE */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Bill Date
                       </label>
@@ -420,23 +956,18 @@ const AddIncome = () => {
                         type="date"
                         className="form-control"
                         name="billDate"
-                        value={data.billDate}
+                        value={
+                          data.billDate
+                        }
                         onChange={
                           handleChange
                         }
-                        required
                       />
-
                     </div>
 
-                  </div>
+                    {/* WATER */}
 
-                  {/* WATER */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Water Bill
                       </label>
@@ -444,25 +975,19 @@ const AddIncome = () => {
                       <input
                         type="number"
                         className="form-control"
-                        placeholder="Water Bill"
                         name="waterBill"
-                        value={data.waterBill}
+                        value={
+                          data.waterBill
+                        }
                         onChange={
                           handleChange
                         }
-                        required
                       />
-
                     </div>
 
-                  </div>
+                    {/* ELECTRICITY */}
 
-                  {/* ELECTRICITY */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Electricity Bill
                       </label>
@@ -470,7 +995,6 @@ const AddIncome = () => {
                       <input
                         type="number"
                         className="form-control"
-                        placeholder="Electricity Bill"
                         name="electricityBill"
                         value={
                           data.electricityBill
@@ -478,19 +1002,12 @@ const AddIncome = () => {
                         onChange={
                           handleChange
                         }
-                        required
                       />
-
                     </div>
 
-                  </div>
+                    {/* MAINTAINANCE */}
 
-                  {/* MAINTAINANCE */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Maintainance Bill
                       </label>
@@ -498,7 +1015,6 @@ const AddIncome = () => {
                       <input
                         type="number"
                         className="form-control"
-                        placeholder="Maintainance Bill"
                         name="maintainanceBill"
                         value={
                           data.maintainanceBill
@@ -506,19 +1022,12 @@ const AddIncome = () => {
                         onChange={
                           handleChange
                         }
-                        required
                       />
-
                     </div>
 
-                  </div>
+                    {/* GARBAGE */}
 
-                  {/* GARBAGE */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Garbage Bill
                       </label>
@@ -526,7 +1035,6 @@ const AddIncome = () => {
                       <input
                         type="number"
                         className="form-control"
-                        placeholder="Garbage Bill"
                         name="garbageBill"
                         value={
                           data.garbageBill
@@ -535,17 +1043,11 @@ const AddIncome = () => {
                           handleChange
                         }
                       />
-
                     </div>
 
-                  </div>
+                    {/* OTHER */}
 
-                  {/* OTHER */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Other Bill
                       </label>
@@ -553,24 +1055,19 @@ const AddIncome = () => {
                       <input
                         type="number"
                         className="form-control"
-                        placeholder="Other Bill"
                         name="otherBill"
-                        value={data.otherBill}
+                        value={
+                          data.otherBill
+                        }
                         onChange={
                           handleChange
                         }
                       />
-
                     </div>
 
-                  </div>
+                    {/* TOTAL */}
 
-                  {/* TOTAL */}
-
-                  <div className="col-md-3">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-3 mb-3">
                       <label>
                         Total Amount
                       </label>
@@ -578,27 +1075,22 @@ const AddIncome = () => {
                       <input
                         type="number"
                         className="form-control"
-                        value={data.amount}
+                        value={
+                          data.amount
+                        }
                         readOnly
                       />
-
                     </div>
 
-                  </div>
+                    {/* DESCRIPTION */}
 
-                  {/* DESCRIPTION */}
-
-                  <div className="col-md-12">
-
-                    <div className="mb-3">
-
+                    <div className="col-md-12 mb-3">
                       <label>
                         Description
                       </label>
 
                       <textarea
                         className="form-control"
-                        placeholder="Description"
                         name="description"
                         value={
                           data.description
@@ -607,326 +1099,30 @@ const AddIncome = () => {
                           handleChange
                         }
                       ></textarea>
-
                     </div>
-
                   </div>
 
-                </div>
-
-                <div className="text-center mt-3">
-
-                  <button className="btn btn-success px-5">
-
-                    {editId
-                      ? "Update Amount"
-                      : "Add Amount"}
-
-                  </button>
-
-                </div>
-
-              </form>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* TABLE */}
-
-        <div className="col-md-12">
-
-          <div className="card shadow">
-
-            <div className="card-body">
-
-              {/* TOP */}
-
-              <div className="d-flex justify-content-between align-items-center mb-3">
-
-                <h3 className="m-0">
-                  Apartment Amount History
-                </h3>
-
-                {/* SEARCH */}
-
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search..."
-                  style={{ width: "250px" }}
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(
-                      e.target.value
-                    );
-                    setCurrentPage(1);
-                  }}
-                />
-
-              </div>
-
-              {/* TABLE */}
-
-              <div className="table-responsive">
-
-                <table className="table table-bordered table-striped">
-
-                  <thead className="table-dark">
-
-                    <tr>
-
-                      <th>S.No</th>
-
-                      <th>Owner</th>
-
-                      <th>Flat</th>
-
-                      <th>Bill Date</th>
-
-                      <th>Water</th>
-
-                      <th>Electricity</th>
-
-                      <th>Maintainance</th>
-
-                      <th>Garbage</th>
-
-                      <th>Other</th>
-
-                      <th>Total</th>
-
-                      <th>Description</th>
-
-                      <th>Time</th>
-
-                      <th>Edit</th>
-
-                      <th>Delete</th>
-
-                    </tr>
-
-                  </thead>
-
-                  <tbody>
-
-                    {currentItems.length > 0 ? (
-
-                      currentItems.map(
-                        (item, index) => (
-
-                          <tr key={item.id}>
-
-                            <td>
-                              {indexOfFirstItem +
-                                index +
-                                1}
-                            </td>
-
-                            <td>
-                              {item.owner}
-                            </td>
-
-                            <td>
-                              {item.flat}
-                            </td>
-
-                            <td>
-                              {item.billDate}
-                            </td>
-
-                            <td>
-                              ₹ {item.waterBill}
-                            </td>
-
-                            <td>
-                              ₹ {item.electricityBill}
-                            </td>
-
-                            <td>
-                              ₹ {item.maintainanceBill}
-                            </td>
-
-                            <td>
-                              ₹ {item.garbageBill}
-                            </td>
-
-                            <td>
-                              ₹ {item.otherBill}
-                            </td>
-
-                            <td className="fw-bold text-success">
-                              ₹ {item.amount}
-                            </td>
-
-                            <td>
-                              {item.description}
-                            </td>
-
-                            <td>
-                              {item.time}
-                            </td>
-
-                            {/* EDIT */}
-
-                            <td>
-
-                              <button
-                                className="btn btn-primary btn-sm"
-                                onClick={() =>
-                                  handleEdit(
-                                    item
-                                  )
-                                }
-                              >
-                                <i className="bi bi-pencil-square"></i>
-                              </button>
-
-                            </td>
-
-                            {/* DELETE */}
-
-                            <td>
-
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() =>
-                                  handleDelete(
-                                    item.id
-                                  )
-                                }
-                              >
-                                <i className="bi bi-trash"></i>
-                              </button>
-
-                            </td>
-
-                          </tr>
-                        )
-                      )
-
-                    ) : (
-
-                      <tr>
-
-                        <td
-                          colSpan={14}
-                          className="text-center"
-                        >
-                          No Data Found
-                        </td>
-
-                      </tr>
-
-                    )}
-
-                  </tbody>
-
-                </table>
-
-              </div>
-
-              {/* PAGINATION */}
-
-              <div className="d-flex justify-content-center mt-3">
-
-                <nav>
-
-                  <ul className="pagination">
-
-                    {/* PREVIOUS */}
-
-                    <li
-                      className={`page-item ${
-                        currentPage === 1
-                          ? "disabled"
-                          : ""
-                      }`}
+                  <div className="text-end">
+                    <button
+                      type="button"
+                      className="btn btn-secondary me-2"
+                      onClick={
+                        resetForm
+                      }
                     >
+                      Close
+                    </button>
 
-                      <button
-                        className="page-link"
-                        onClick={() =>
-                          setCurrentPage(
-                            currentPage - 1
-                          )
-                        }
-                      >
-                        Previous
-                      </button>
-
-                    </li>
-
-                    {/* PAGE NUMBERS */}
-
-                    {[...Array(totalPages)].map(
-                      (_, index) => (
-
-                        <li
-                          key={index}
-                          className={`page-item ${
-                            currentPage ===
-                            index + 1
-                              ? "active"
-                              : ""
-                          }`}
-                        >
-
-                          <button
-                            className="page-link"
-                            onClick={() =>
-                              setCurrentPage(
-                                index + 1
-                              )
-                            }
-                          >
-                            {index + 1}
-                          </button>
-
-                        </li>
-                      )
-                    )}
-
-                    {/* NEXT */}
-
-                    <li
-                      className={`page-item ${
-                        currentPage ===
-                        totalPages
-                          ? "disabled"
-                          : ""
-                      }`}
-                    >
-
-                      <button
-                        className="page-link"
-                        onClick={() =>
-                          setCurrentPage(
-                            currentPage + 1
-                          )
-                        }
-                      >
-                        Next
-                      </button>
-
-                    </li>
-
-                  </ul>
-
-                </nav>
-
+                    <button className="btn btn-primary">
+                      Update
+                    </button>
+                  </div>
+                </form>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
-      </div>
-
+      )}
     </div>
   );
 };

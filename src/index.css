@@ -188,6 +188,7 @@ color: #fff !important;
 }
 .flats tbody tr td{
   text-align: center !important;
+  padding: 6px;
 }
 .badge {
     width: 65px;

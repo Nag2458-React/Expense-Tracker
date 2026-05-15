@@ -332,7 +332,7 @@ const Dashboard = () => {
           <div
             className="card shadow text-center p-3"
             style={{
-              background: "#ff9999",
+              background: "rgb(255 194 194 / 81%)",
               color: "#000",
               borderRadius: "10px",
             }}
