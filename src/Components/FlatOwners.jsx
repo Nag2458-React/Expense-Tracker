@@ -16,7 +16,6 @@ import {
 import { toast } from "react-toastify";
 
 export const FlatOwners = () => {
-
   const [formData, setFormData] = useState({
     flat: "",
     owner: "",
@@ -47,10 +46,18 @@ export const FlatOwners = () => {
   const [editId, setEditId] =
     useState(null);
 
+  // LOGIN USER
+
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
+  const isAdmin =
+    user?.role === "admin";
+
   // HANDLE CHANGE
 
   const handleChange = (e) => {
-
     const { name, value } = e.target;
 
     setFormData({
@@ -62,9 +69,7 @@ export const FlatOwners = () => {
   // FETCH DATA
 
   const fetchData = async () => {
-
     try {
-
       const q = query(
         collection(db, "flat_owners"),
         orderBy("flat", "asc")
@@ -81,7 +86,7 @@ export const FlatOwners = () => {
           })
         );
 
-      // PERFECT NUMBER SORT
+      // NUMBER SORT
 
       result.sort(
         (a, b) =>
@@ -90,7 +95,6 @@ export const FlatOwners = () => {
       );
 
       setFlatData(result);
-
     } catch (error) {
       console.log(error);
     }
@@ -103,15 +107,19 @@ export const FlatOwners = () => {
   // SUBMIT
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    try {
+    if (!isAdmin) {
+      toast.error(
+        "Only Admin Can Add Data"
+      );
+      return;
+    }
 
+    try {
       // UPDATE
 
       if (editId) {
-
         const updateRef = doc(
           db,
           "flat_owners",
@@ -127,9 +135,7 @@ export const FlatOwners = () => {
         );
 
         setEditId(null);
-
       } else {
-
         // ADD
 
         await addDoc(
@@ -161,7 +167,6 @@ export const FlatOwners = () => {
       });
 
       fetchData();
-
     } catch (error) {
       console.log(error);
     }
@@ -170,9 +175,14 @@ export const FlatOwners = () => {
   // DELETE
 
   const handleDelete = async (id) => {
+    if (!isAdmin) {
+      toast.error(
+        "Only Admin Can Delete"
+      );
+      return;
+    }
 
     try {
-
       await deleteDoc(
         doc(db, "flat_owners", id)
       );
@@ -182,7 +192,6 @@ export const FlatOwners = () => {
       );
 
       fetchData();
-
     } catch (error) {
       console.log(error);
     }
@@ -191,6 +200,12 @@ export const FlatOwners = () => {
   // EDIT
 
   const handleEdit = (item) => {
+    if (!isAdmin) {
+      toast.error(
+        "Only Admin Can Edit"
+      );
+      return;
+    }
 
     setFormData({
       flat: item.flat,
@@ -215,7 +230,6 @@ export const FlatOwners = () => {
 
   const filteredData =
     flatData.filter((item) => {
-
       return (
         item.flat
           ?.toString()
@@ -223,7 +237,6 @@ export const FlatOwners = () => {
           .includes(
             searchTerm.toLowerCase()
           ) ||
-
         item.owner
           ?.toLowerCase()
           .includes(
@@ -254,326 +267,293 @@ export const FlatOwners = () => {
 
   return (
     <div className="container mt-5">
-
       {/* FORM */}
 
-      <div className="card shadow mb-4">
+      {isAdmin && (
+        <div className="card shadow mb-4">
+          <div className="card-body">
+            <h3 className="text-center mb-4">
+              Flat Owner Master
+            </h3>
 
-        <div className="card-body">
+            <form
+              onSubmit={handleSubmit}
+            >
+              <div className="row">
+                {/* FLAT */}
 
-          <h3 className="text-center mb-4">
-            Flat Owner Master
-          </h3>
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Flat Number
+                    </label>
 
-          <form
-            onSubmit={handleSubmit}
-          >
-
-            <div className="row">
-
-              {/* FLAT */}
-
-              <div className="col-md-3">
-
-                <div className="mb-3">
-
-                  <label className="fw-bold">
-                    Flat Number
-                  </label>
-
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Enter Flat Number"
-                    name="flat"
-                    value={
-                      formData.flat
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter Flat Number"
+                      name="flat"
+                      value={
+                        formData.flat
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    />
+                  </div>
                 </div>
 
-              </div>
+                {/* OWNER */}
 
-              {/* OWNER */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Owner Name
+                    </label>
 
-              <div className="col-md-3">
-
-                <div className="mb-3">
-
-                  <label className="fw-bold">
-                    Owner Name
-                  </label>
-
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Enter Owner Name"
-                    name="owner"
-                    value={
-                      formData.owner
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter Owner Name"
+                      name="owner"
+                      value={
+                        formData.owner
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    />
+                  </div>
                 </div>
 
-              </div>
+                {/* DATE */}
 
-              {/* DATE */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Bill Date
+                    </label>
 
-              <div className="col-md-3">
-
-                <div className="mb-3">
-
-                  <label className="fw-bold">
-                    Bill Date
-                  </label>
-
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="billDate"
-                    value={
-                      formData.billDate
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="billDate"
+                      value={
+                        formData.billDate
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    />
+                  </div>
                 </div>
 
-              </div>
+                {/* WATER */}
 
-              {/* WATER */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Water Bill
+                    </label>
 
-              <div className="col-md-3">
+                    <select
+                      className="form-select"
+                      name="waterBill"
+                      value={
+                        formData.waterBill
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    >
+                      <option value="">
+                        --Select--
+                      </option>
 
-                <div className="mb-3">
+                      <option value="Pending">
+                        Pending
+                      </option>
 
-                  <label className="fw-bold">
-                    Water Bill
-                  </label>
-
-                  <select
-                    className="form-select"
-                    name="waterBill"
-                    value={
-                      formData.waterBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  >
-  <option>--Select--</option>
-                    <option>
-                      Pending
-                    </option>
-
-                    <option>
-                      Active
-                    </option>
-
-                  </select>
-
+                      <option value="Active">
+                        Active
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
-              </div>
+                {/* ELECTRICITY */}
 
-              {/* ELECTRICITY */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Electricity Bill
+                    </label>
 
-              <div className="col-md-3">
+                    <select
+                      className="form-select"
+                      name="electricityBill"
+                      value={
+                        formData.electricityBill
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    >
+                      <option value="">
+                        --Select--
+                      </option>
 
-                <div className="mb-3">
+                      <option value="Pending">
+                        Pending
+                      </option>
 
-                  <label className="fw-bold">
-                    Electricity Bill
-                  </label>
-
-                  <select
-                    className="form-select"
-                    name="electricityBill"
-                    value={
-                      formData.electricityBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  >
-                    <option>--Select--</option>
-                    <option>
-                      Pending
-                    </option>
-
-                    <option>
-                      Active
-                    </option>
-
-                  </select>
-
+                      <option value="Active">
+                        Active
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
-              </div>
+                {/* MAINTAINANCE */}
 
-              {/* MAINTAINANCE */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Maintainance Bill
+                    </label>
 
-              <div className="col-md-3">
+                    <select
+                      className="form-select"
+                      name="maintainanceBill"
+                      value={
+                        formData.maintainanceBill
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    >
+                      <option value="">
+                        --Select--
+                      </option>
 
-                <div className="mb-3">
+                      <option value="Pending">
+                        Pending
+                      </option>
 
-                  <label className="fw-bold">
-                    Maintainance Bill
-                  </label>
-
-                  <select
-                    className="form-select"
-                    name="maintainanceBill"
-                    value={
-                      formData.maintainanceBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  >
-  <option>--Select--</option>
-                    <option>
-                      Pending
-                    </option>
-
-                    <option>
-                      Active
-                    </option>
-
-                  </select>
-
+                      <option value="Active">
+                        Active
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
-              </div>
+                {/* GARBAGE */}
 
-              {/* GARBAGE */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Garbage Bill
+                    </label>
 
-              <div className="col-md-3">
+                    <select
+                      className="form-select"
+                      name="garbageBill"
+                      value={
+                        formData.garbageBill
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    >
+                      <option value="">
+                        --Select--
+                      </option>
 
-                <div className="mb-3">
+                      <option value="Pending">
+                        Pending
+                      </option>
 
-                  <label className="fw-bold">
-                    Garbage Bill
-                  </label>
-
-                  <select
-                    className="form-select"
-                    name="garbageBill"
-                    value={
-                      formData.garbageBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  >
-  <option>--Select--</option>
-                    <option>
-                      Pending
-                    </option>
-
-                    <option>
-                      Active
-                    </option>
-
-                  </select>
-
+                      <option value="Active">
+                        Active
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
-              </div>
+                {/* OTHER */}
 
-              {/* OTHER */}
+                <div className="col-md-3">
+                  <div className="mb-3">
+                    <label className="fw-bold">
+                      Other Bill
+                    </label>
 
-              <div className="col-md-3">
+                    <select
+                      className="form-select"
+                      name="otherBill"
+                      value={
+                        formData.otherBill
+                      }
+                      onChange={
+                        handleChange
+                      }
+                      required
+                    >
+                      <option value="">
+                        --Select--
+                      </option>
 
-                <div className="mb-3">
+                      <option value="Pending">
+                        Pending
+                      </option>
 
-                  <label className="fw-bold">
-                    Other Bill
-                  </label>
-
-                  <select
-                    className="form-select"
-                    name="otherBill"
-                    value={
-                      formData.otherBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  >
-  <option>--Select--</option>
-                    <option>
-                      Pending
-                    </option>
-
-                    <option>
-                      Active
-                    </option>
-
-                  </select>
-
+                      <option value="Active">
+                        Active
+                      </option>
+                    </select>
+                  </div>
                 </div>
 
-              </div>
+                {/* BUTTON */}
 
-              {/* BUTTON */}
+                <div className="col-md-2">
+                  <div className="mb-3">
+                    <label
+                      style={{
+                        visibility:
+                          "hidden",
+                      }}
+                    >
+                      Submit
+                    </label>
 
-              <div className="col-md-2">
-
-                <div className="mb-3">
-
-                  <label
-                    style={{
-                      visibility:
-                        "hidden",
-                    }}
-                  >
-                    Submit
-                  </label>
-
-                  <button className="btn btn-success w-100">
-
-                    {editId
-                      ? "Update"
-                      : "Submit"}
-
-                  </button>
-
+                    <button className="btn btn-success w-100">
+                      {editId
+                        ? "Update"
+                        : "Submit"}
+                    </button>
+                  </div>
                 </div>
-
               </div>
-
-            </div>
-
-          </form>
-
+            </form>
+          </div>
         </div>
-
-      </div>
+      )}
 
       {/* TABLE */}
 
       <div className="card shadow">
-
         <div className="card-body">
-
           {/* TOP */}
 
           <div className="d-flex justify-content-between align-items-center mb-3">
-
             <h3 className="m-0">
               Flat Owner List
             </h3>
@@ -587,69 +567,51 @@ export const FlatOwners = () => {
               }}
               value={searchTerm}
               onChange={(e) => {
-
                 setSearchTerm(
                   e.target.value
                 );
 
                 setCurrentPage(1);
-
               }}
             />
-
           </div>
 
           {/* TABLE */}
 
           <div className="table-responsive">
-
-            <table className="table table-bordered table-striped">
-
+            <table className="table table-bordered table-striped flats">
               <thead className="table-dark">
-
                 <tr>
-
                   <th>S.No</th>
-
                   <th>Flat</th>
-
                   <th>Owner</th>
-
                   <th>Date</th>
-
                   <th>Water</th>
-
                   <th>Electricity</th>
-
                   <th>Maintainance</th>
-
                   <th>Garbage</th>
-
                   <th>Other</th>
 
-                  <th>Edit</th>
-
-                  <th>Delete</th>
-
+                  {isAdmin && (
+                    <>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                    </>
+                  )}
                 </tr>
-
               </thead>
 
               <tbody>
-
                 {currentItems.length >
                 0 ? (
-
                   currentItems.map(
                     (
                       item,
                       index
                     ) => (
-
                       <tr
                         key={item.id}
                       >
-
                         <td>
                           {indexOfFirstItem +
                             index +
@@ -670,6 +632,8 @@ export const FlatOwners = () => {
                           }
                         </td>
 
+                        {/* WATER */}
+
                         <td>
                           <span
                             className={`badge ${
@@ -684,6 +648,8 @@ export const FlatOwners = () => {
                             }
                           </span>
                         </td>
+
+                        {/* ELECTRICITY */}
 
                         <td>
                           <span
@@ -700,6 +666,8 @@ export const FlatOwners = () => {
                           </span>
                         </td>
 
+                        {/* MAINTAINANCE */}
+
                         <td>
                           <span
                             className={`badge ${
@@ -715,6 +683,8 @@ export const FlatOwners = () => {
                           </span>
                         </td>
 
+                        {/* GARBAGE */}
+
                         <td>
                           <span
                             className={`badge ${
@@ -729,6 +699,8 @@ export const FlatOwners = () => {
                             }
                           </span>
                         </td>
+
+                        {/* OTHER */}
 
                         <td>
                           <span
@@ -747,71 +719,63 @@ export const FlatOwners = () => {
 
                         {/* EDIT */}
 
-                        <td>
+                        {isAdmin && (
+                          <>
+                            <td>
+                              <button
+                                className="btn btn-primary btn-sm"
+                                onClick={() =>
+                                  handleEdit(
+                                    item
+                                  )
+                                }
+                              >
+                                <i className="bi bi-pencil-square"></i>
+                              </button>
+                            </td>
 
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() =>
-                              handleEdit(
-                                item
-                              )
-                            }
-                          >
-                            <i className="bi bi-pencil-square"></i>
-                          </button>
+                            {/* DELETE */}
 
-                        </td>
-
-                        {/* DELETE */}
-
-                        <td>
-
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() =>
-                              handleDelete(
-                                item.id
-                              )
-                            }
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
-
-                        </td>
-
+                            <td>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() =>
+                                  handleDelete(
+                                    item.id
+                                  )
+                                }
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     )
                   )
-
                 ) : (
-
                   <tr>
-
                     <td
-                      colSpan={11}
+                      colSpan={
+                        isAdmin
+                          ? 11
+                          : 9
+                      }
                       className="text-center"
                     >
                       No Data Found
                     </td>
-
                   </tr>
-
                 )}
-
               </tbody>
-
             </table>
-
           </div>
 
           {/* PAGINATION */}
 
           <div className="d-flex justify-content-center mt-3">
-
             <nav>
-
               <ul className="pagination">
-
                 {/* PREVIOUS */}
 
                 <li
@@ -822,7 +786,6 @@ export const FlatOwners = () => {
                       : ""
                   }`}
                 >
-
                   <button
                     className="page-link"
                     onClick={() =>
@@ -834,42 +797,33 @@ export const FlatOwners = () => {
                   >
                     Previous
                   </button>
-
                 </li>
 
-                {/* PAGE */}
+                {/* PAGE NUMBERS */}
 
                 {[...Array(
                   totalPages
                 )].map(
                   (_, index) => (
-
                     <li
-                      key={
-                        index
-                      }
+                      key={index}
                       className={`page-item ${
                         currentPage ===
-                        index +
-                          1
+                        index + 1
                           ? "active"
                           : ""
                       }`}
                     >
-
                       <button
                         className="page-link"
                         onClick={() =>
                           setCurrentPage(
-                            index +
-                              1
+                            index + 1
                           )
                         }
                       >
-                        {index +
-                          1}
+                        {index + 1}
                       </button>
-
                     </li>
                   )
                 )}
@@ -884,7 +838,6 @@ export const FlatOwners = () => {
                       : ""
                   }`}
                 >
-
                   <button
                     className="page-link"
                     onClick={() =>
@@ -896,19 +849,12 @@ export const FlatOwners = () => {
                   >
                     Next
                   </button>
-
                 </li>
-
               </ul>
-
             </nav>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 };

@@ -275,7 +275,7 @@ const Dashboard = () => {
           <div
             className="card shadow text-center p-3"
             style={{
-              background: "#0dcaf0",
+              background: "rgb(97 229 255)",
               color: "#000",
               borderRadius: "10px",
             }}
@@ -292,7 +292,7 @@ const Dashboard = () => {
           <div
             className="card shadow text-center p-3"
             style={{
-              background: "#ffb703",
+              background: "rgb(255 221 134)",
               color: "#000",
               borderRadius: "10px",
             }}
@@ -418,8 +418,9 @@ const Dashboard = () => {
 
           <button
             style={{
-              background: "#576000",
-              border: "1px solid #fff",
+              background: "rgb(229 251 7)",
+            color: "#000",
+            fontWeight:"bold",
               marginTop: "30px",
             }}
             className="btn btn-dark"
