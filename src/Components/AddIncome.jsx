@@ -684,45 +684,79 @@ const AddIncome = () => {
                           }
                         </td>
 
-                        <td>
-                          ₹{" "}
-                          {
-                            item.waterBill
-                          }
-                        </td>
+                      
 
-                        <td>
-                          ₹{" "}
-                          {
-                            item.electricityBill
-                          }
-                        </td>
+<td>
+  {item.waterBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.waterBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
 
-                        <td>
-                          ₹{" "}
-                          {
-                            item.maintainanceBill
-                          }
-                        </td>
+<td>
+  {item.electricityBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.electricityBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
 
-                        <td>
-                          ₹{" "}
-                          {
-                            item.garbageBill
-                          }
-                        </td>
+<td>
+  {item.maintainanceBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.maintainanceBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
 
-                        <td>
-                          ₹{" "}
-                          {
-                            item.otherBill
-                          }
-                        </td>
+<td>
+  {item.garbageBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.garbageBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
 
-                        <td className="fw-bold text-success">
-                          ₹{" "}
-                          {item.amount}
-                        </td>
+<td>
+  {item.otherBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.otherBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
+
+<td className="fw-bold">
+  {item.amount > 0 ? (
+    <span className="text-success">
+      ₹ {item.amount}
+    </span>
+  ) : (
+    <span className="badge bg-warning text-dark">
+      Pending
+    </span>
+  )}
+</td>
 
                         <td>
                           {
@@ -736,7 +770,7 @@ const AddIncome = () => {
 
                         {/* EDIT */}
 
-                        <td>
+                        <td style={{textAlign:"center"}}>
                           <button
                             className="btn btn-primary btn-sm"
                             onClick={() =>

@@ -213,3 +213,22 @@ color: #fff !important;
     color: #ffffff;
 
 }
+span.badge.bg-warning {
+    color: #3f3f3f;
+    padding: 5px;
+    font-size: 11px;
+}
+.table tr th {
+    text-align: center;
+}
+.input-group-text{
+  
+    background: #e2f807;
+    font-weight: bold;
+    color: #000;
+    border: 0;
+}
+.ft {
+    background: #152835;
+    padding: 4px 0px 1px;
+}

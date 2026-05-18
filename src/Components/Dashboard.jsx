@@ -315,7 +315,7 @@ const Dashboard = () => {
           <div
             className="card shadow text-center p-3"
             style={{
-              background: "#90ee90",
+              background: "rgb(255 196 183)",
               color: "#000",
               borderRadius: "10px",
             }}
@@ -332,7 +332,7 @@ const Dashboard = () => {
           <div
             className="card shadow text-center p-3"
             style={{
-              background: "rgb(255 194 194 / 81%)",
+              background: "rgb(255 255 255 / 91%)",
               color: "#000",
               borderRadius: "10px",
             }}
@@ -366,7 +366,7 @@ const Dashboard = () => {
           <div
             className="card shadow text-center p-3"
             style={{
-              background: "#00ffe6",
+              background: "rgb(156 255 187)",
               color: "#000",
               borderRadius: "10px",
             }}
@@ -521,29 +521,89 @@ const Dashboard = () => {
 
                         <td>{item.billDate}</td>
 
-                        <td>
-                          ₹ {item.waterBill}
-                        </td>
+                       {/* WATER */}
 
-                        <td>
-                          ₹ {item.electricityBill}
-                        </td>
+<td>
+  {item.waterBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.waterBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
 
-                        <td>
-                          ₹ {item.maintainanceBill}
-                        </td>
+{/* ELECTRICITY */}
 
-                        <td>
-                          ₹ {item.garbageBill}
-                        </td>
+<td>
+  {item.electricityBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.electricityBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
 
-                        <td>
-                          ₹ {item.otherBill}
-                        </td>
+{/* MAINTAINANCE */}
 
-                        <td className="fw-bold text-success">
-                          ₹ {item.amount}
-                        </td>
+<td>
+  {item.maintainanceBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.maintainanceBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
+
+{/* GARBAGE */}
+
+<td>
+  {item.garbageBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.garbageBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
+
+{/* OTHER */}
+
+<td>
+  {item.otherBill ? (
+    <span className="fw-bold text-success">
+      ₹ {item.otherBill}
+    </span>
+  ) : (
+    <span className="badge bg-warning">
+      Pending
+    </span>
+  )}
+</td>
+
+{/* TOTAL */}
+
+<td className="fw-bold">
+  {item.amount > 0 ? (
+    <span className="text-success">
+      ₹ {item.amount}
+    </span>
+  ) : (
+    <span className="badge bg-warning text-dark">
+      Pending
+    </span>
+  )}
+</td>
 
                         <td>
                           {item.description}

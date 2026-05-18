@@ -23,6 +23,7 @@ import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import { FlatOwners } from "./Components/FlatOwners";
 import { MyInfo } from "./Components/MyInfo";
+import { Footer } from "./Components/Footer";
 
 
 
@@ -53,6 +54,7 @@ const App = () => {
               <Navbar />
 
               <Dashboard />
+              <Footer />
             </PrivateRoute>
           }
         />
