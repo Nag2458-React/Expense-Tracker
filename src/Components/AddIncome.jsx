@@ -47,7 +47,7 @@ const AddIncome = () => {
 
   const itemsPerPage = 10;
 
-  // EDIT MODAL
+  // EDIT
 
   const [editId, setEditId] =
     useState(null);
@@ -55,7 +55,7 @@ const AddIncome = () => {
   const [showModal, setShowModal] =
     useState(false);
 
-  // FETCH INCOME DATA
+  // FETCH DATA
 
   const fetchData = async () => {
     try {
@@ -151,7 +151,7 @@ const AddIncome = () => {
           : "";
     }
 
-    // AUTO TOTAL
+    // TOTAL CALCULATION
 
     const total =
       Number(
@@ -309,7 +309,7 @@ const AddIncome = () => {
     setShowModal(true);
   };
 
-  // SEARCH FILTER
+  // SEARCH
 
   const filteredData =
     incomeData.filter((item) => {
@@ -321,20 +321,9 @@ const AddIncome = () => {
           ) ||
         item.flat
           ?.toString()
-          .toLowerCase()
-          .includes(
-            searchTerm.toLowerCase()
-          ) ||
+          .includes(searchTerm) ||
         item.billDate
-          ?.toLowerCase()
-          .includes(
-            searchTerm.toLowerCase()
-          ) ||
-        item.description
-          ?.toLowerCase()
-          .includes(
-            searchTerm.toLowerCase()
-          )
+          ?.includes(searchTerm)
       );
     });
 
@@ -359,7 +348,7 @@ const AddIncome = () => {
 
   return (
     <div className="container mt-5">
-      {/* ADD FORM */}
+      {/* FORM */}
 
       <div className="card shadow mb-4">
         <div className="card-body">
@@ -371,234 +360,188 @@ const AddIncome = () => {
             <div className="row">
               {/* FLAT */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Flat No
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Flat No
+                </label>
 
-                  <select
-                    className="form-select"
-                    name="flat"
-                    value={data.flat}
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  >
-                    <option value="">
-                      Select Flat
-                    </option>
+                <select
+                  className="form-select"
+                  name="flat"
+                  value={data.flat}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">
+                    Select Flat
+                  </option>
 
-                    {flatOwners.map(
-                      (item) => (
-                        <option
-                          key={item.id}
-                          value={
-                            item.flat
-                          }
-                        >
-                          {item.flat}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
+                  {flatOwners.map(
+                    (item) => (
+                      <option
+                        key={item.id}
+                        value={item.flat}
+                      >
+                        {item.flat}
+                      </option>
+                    )
+                  )}
+                </select>
               </div>
 
               {/* OWNER */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Owner Name
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Owner Name
+                </label>
 
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="owner"
-                    value={data.owner}
-                    readOnly
-                  />
-                </div>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={data.owner}
+                  readOnly
+                />
               </div>
 
-              {/* BILL DATE */}
+              {/* DATE */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Bill Date
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Bill Date
+                </label>
 
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="billDate"
-                    value={
-                      data.billDate
-                    }
-                    onChange={
-                      handleChange
-                    }
-                    required
-                  />
-                </div>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="billDate"
+                  value={data.billDate}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               {/* WATER */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Water Bill
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Water Bill
+                </label>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="waterBill"
-                    value={
-                      data.waterBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  />
-                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="waterBill"
+                  value={data.waterBill}
+                  onChange={handleChange}
+                  placeholder="Leave empty for Pending"
+                />
               </div>
 
               {/* ELECTRICITY */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Electricity Bill
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Electricity Bill
+                </label>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="electricityBill"
-                    value={
-                      data.electricityBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  />
-                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="electricityBill"
+                  value={data.electricityBill}
+                  onChange={handleChange}
+                  placeholder="Leave empty for Pending"
+                />
               </div>
 
               {/* MAINTAINANCE */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Maintainance Bill
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Maintainance Bill
+                </label>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="maintainanceBill"
-                    value={
-                      data.maintainanceBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  />
-                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="maintainanceBill"
+                  value={data.maintainanceBill}
+                  onChange={handleChange}
+                  placeholder="Leave empty for Pending"
+                />
               </div>
 
               {/* GARBAGE */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Garbage Bill
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Garbage Bill
+                </label>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="garbageBill"
-                    value={
-                      data.garbageBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  />
-                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="garbageBill"
+                  value={data.garbageBill}
+                  onChange={handleChange}
+                  placeholder="Leave empty for Pending"
+                />
               </div>
 
               {/* OTHER */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Other Bill
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Other Bill
+                </label>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="otherBill"
-                    value={
-                      data.otherBill
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  />
-                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  name="otherBill"
+                  value={data.otherBill}
+                  onChange={handleChange}
+                  placeholder="Leave empty for Pending"
+                />
               </div>
 
               {/* TOTAL */}
 
-              <div className="col-md-3">
-                <div className="mb-3">
-                  <label>
-                    Total Amount
-                  </label>
+              <div className="col-md-3 mb-3">
+                <label>
+                  Total Amount
+                </label>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={data.amount}
-                    readOnly
-                  />
-                </div>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={data.amount}
+                  readOnly
+                />
               </div>
 
               {/* DESCRIPTION */}
 
-              <div className="col-md-12">
-                <div className="mb-3">
-                  <label>
-                    Description
-                  </label>
+              <div className="col-md-12 mb-3">
+                <label>
+                  Description
+                </label>
 
-                  <textarea
-                    className="form-control"
-                    name="description"
-                    value={
-                      data.description
-                    }
-                    onChange={
-                      handleChange
-                    }
-                  ></textarea>
-                </div>
+                <textarea
+                  className="form-control"
+                  name="description"
+                  value={data.description}
+                  onChange={handleChange}
+                ></textarea>
               </div>
             </div>
 
             <div className="text-center">
               <button className="btn btn-success px-5">
-                Add Amount
+                {editId
+                  ? "Update"
+                  : "Add Amount"}
               </button>
             </div>
           </form>
@@ -639,7 +582,7 @@ const AddIncome = () => {
                   <th>S.No</th>
                   <th>Owner</th>
                   <th>Flat</th>
-                  <th>Date</th>
+                  <th>Bill Date</th>
                   <th>Water</th>
                   <th>Electricity</th>
                   <th>Maintainance</th>
@@ -684,79 +627,97 @@ const AddIncome = () => {
                           }
                         </td>
 
-                      
+                        {/* WATER */}
 
-<td>
-  {item.waterBill ? (
-    <span className="fw-bold text-success">
-      ₹ {item.waterBill}
-    </span>
-  ) : (
-    <span className="badge bg-warning">
-      Pending
-    </span>
-  )}
-</td>
+                        <td>
+                          {item.waterBill ? (
+                            <span className="fw-bold text-success">
+                              ₹{" "}
+                              {
+                                item.waterBill
+                              }
+                            </span>
+                          ) : (
+                            <span className="badge bg-danger">
+                              Pending
+                            </span>
+                          )}
+                        </td>
 
-<td>
-  {item.electricityBill ? (
-    <span className="fw-bold text-success">
-      ₹ {item.electricityBill}
-    </span>
-  ) : (
-    <span className="badge bg-warning">
-      Pending
-    </span>
-  )}
-</td>
+                        {/* ELECTRICITY */}
 
-<td>
-  {item.maintainanceBill ? (
-    <span className="fw-bold text-success">
-      ₹ {item.maintainanceBill}
-    </span>
-  ) : (
-    <span className="badge bg-warning">
-      Pending
-    </span>
-  )}
-</td>
+                        <td>
+                          {item.electricityBill ? (
+                            <span className="fw-bold text-success">
+                              ₹{" "}
+                              {
+                                item.electricityBill
+                              }
+                            </span>
+                          ) : (
+                            <span className="badge bg-danger">
+                              Pending
+                            </span>
+                          )}
+                        </td>
 
-<td>
-  {item.garbageBill ? (
-    <span className="fw-bold text-success">
-      ₹ {item.garbageBill}
-    </span>
-  ) : (
-    <span className="badge bg-warning">
-      Pending
-    </span>
-  )}
-</td>
+                        {/* MAINTAINANCE */}
 
-<td>
-  {item.otherBill ? (
-    <span className="fw-bold text-success">
-      ₹ {item.otherBill}
-    </span>
-  ) : (
-    <span className="badge bg-warning">
-      Pending
-    </span>
-  )}
-</td>
+                        <td>
+                          {item.maintainanceBill ? (
+                            <span className="fw-bold text-success">
+                              ₹{" "}
+                              {
+                                item.maintainanceBill
+                              }
+                            </span>
+                          ) : (
+                            <span className="badge bg-danger">
+                              Pending
+                            </span>
+                          )}
+                        </td>
 
-<td className="fw-bold">
-  {item.amount > 0 ? (
-    <span className="text-success">
-      ₹ {item.amount}
-    </span>
-  ) : (
-    <span className="badge bg-warning text-dark">
-      Pending
-    </span>
-  )}
-</td>
+                        {/* GARBAGE */}
+
+                        <td>
+                          {item.garbageBill ? (
+                            <span className="fw-bold text-success">
+                              ₹{" "}
+                              {
+                                item.garbageBill
+                              }
+                            </span>
+                          ) : (
+                            <span className="badge bg-danger">
+                              Pending
+                            </span>
+                          )}
+                        </td>
+
+                        {/* OTHER */}
+
+                        <td>
+                          {item.otherBill ? (
+                            <span className="fw-bold text-success">
+                              ₹{" "}
+                              {
+                                item.otherBill
+                              }
+                            </span>
+                          ) : (
+                            <span className="badge bg-danger">
+                              Pending
+                            </span>
+                          )}
+                        </td>
+
+                        {/* TOTAL */}
+
+                        <td className="fw-bold text-success">
+                          ₹{" "}
+                          {item.amount}
+                        </td>
 
                         <td>
                           {
@@ -770,7 +731,7 @@ const AddIncome = () => {
 
                         {/* EDIT */}
 
-                        <td style={{textAlign:"center"}}>
+                        <td className="text-center">
                           <button
                             className="btn btn-primary btn-sm"
                             onClick={() =>
@@ -785,7 +746,7 @@ const AddIncome = () => {
 
                         {/* DELETE */}
 
-                        <td>
+                        <td className="text-center">
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() =>
@@ -817,346 +778,78 @@ const AddIncome = () => {
           {/* PAGINATION */}
 
           <div className="d-flex justify-content-center mt-3">
-            <nav>
-              <ul className="pagination">
-                <li
-                  className={`page-item ${
-                    currentPage === 1
-                      ? "disabled"
-                      : ""
-                  }`}
+            <ul className="pagination">
+              <li
+                className={`page-item ${
+                  currentPage === 1
+                    ? "disabled"
+                    : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() =>
+                    setCurrentPage(
+                      currentPage -
+                        1
+                    )
+                  }
                 >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      setCurrentPage(
-                        currentPage -
-                          1
-                      )
-                    }
-                  >
-                    Previous
-                  </button>
-                </li>
+                  Previous
+                </button>
+              </li>
 
-                {[...Array(
-                  totalPages
-                )].map(
-                  (_, index) => (
-                    <li
-                      key={index}
-                      className={`page-item ${
-                        currentPage ===
-                        index + 1
-                          ? "active"
-                          : ""
-                      }`}
+              {[...Array(
+                totalPages
+              )].map(
+                (_, index) => (
+                  <li
+                    key={index}
+                    className={`page-item ${
+                      currentPage ===
+                      index + 1
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() =>
+                        setCurrentPage(
+                          index + 1
+                        )
+                      }
                     >
-                      <button
-                        className="page-link"
-                        onClick={() =>
-                          setCurrentPage(
-                            index + 1
-                          )
-                        }
-                      >
-                        {index + 1}
-                      </button>
-                    </li>
-                  )
-                )}
+                      {index + 1}
+                    </button>
+                  </li>
+                )
+              )}
 
-                <li
-                  className={`page-item ${
-                    currentPage ===
-                    totalPages
-                      ? "disabled"
-                      : ""
-                  }`}
+              <li
+                className={`page-item ${
+                  currentPage ===
+                  totalPages
+                    ? "disabled"
+                    : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() =>
+                    setCurrentPage(
+                      currentPage +
+                        1
+                    )
+                  }
                 >
-                  <button
-                    className="page-link"
-                    onClick={() =>
-                      setCurrentPage(
-                        currentPage +
-                          1
-                      )
-                    }
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
+                  Next
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-
-      {/* EDIT MODAL */}
-
-      {showModal && (
-        <div
-          className="modal d-block"
-          tabIndex="-1"
-          style={{
-            backgroundColor:
-              "rgba(0,0,0,0.5)",
-          }}
-        >
-          <div className="modal-dialog modal-xl">
-            <div className="modal-content">
-              <div className="modal-header bg-primary text-white">
-                <h5 className="modal-title">
-                  Edit Apartment Amount
-                </h5>
-
-                <button
-                  type="button"
-                  className="btn-close btn-close-white"
-                  onClick={
-                    resetForm
-                  }
-                ></button>
-              </div>
-
-              <div className="modal-body">
-                <form
-                  onSubmit={
-                    handleSubmit
-                  }
-                >
-                  <div className="row">
-                    {/* FLAT */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Flat No
-                      </label>
-
-                      <select
-                        className="form-select"
-                        name="flat"
-                        value={data.flat}
-                        onChange={
-                          handleChange
-                        }
-                      >
-                        {flatOwners.map(
-                          (
-                            item
-                          ) => (
-                            <option
-                              key={
-                                item.id
-                              }
-                              value={
-                                item.flat
-                              }
-                            >
-                              {
-                                item.flat
-                              }
-                            </option>
-                          )
-                        )}
-                      </select>
-                    </div>
-
-                    {/* OWNER */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Owner
-                      </label>
-
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={
-                          data.owner
-                        }
-                        readOnly
-                      />
-                    </div>
-
-                    {/* BILL DATE */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Bill Date
-                      </label>
-
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="billDate"
-                        value={
-                          data.billDate
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      />
-                    </div>
-
-                    {/* WATER */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Water Bill
-                      </label>
-
-                      <input
-                        type="number"
-                        className="form-control"
-                        name="waterBill"
-                        value={
-                          data.waterBill
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      />
-                    </div>
-
-                    {/* ELECTRICITY */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Electricity Bill
-                      </label>
-
-                      <input
-                        type="number"
-                        className="form-control"
-                        name="electricityBill"
-                        value={
-                          data.electricityBill
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      />
-                    </div>
-
-                    {/* MAINTAINANCE */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Maintainance Bill
-                      </label>
-
-                      <input
-                        type="number"
-                        className="form-control"
-                        name="maintainanceBill"
-                        value={
-                          data.maintainanceBill
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      />
-                    </div>
-
-                    {/* GARBAGE */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Garbage Bill
-                      </label>
-
-                      <input
-                        type="number"
-                        className="form-control"
-                        name="garbageBill"
-                        value={
-                          data.garbageBill
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      />
-                    </div>
-
-                    {/* OTHER */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Other Bill
-                      </label>
-
-                      <input
-                        type="number"
-                        className="form-control"
-                        name="otherBill"
-                        value={
-                          data.otherBill
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      />
-                    </div>
-
-                    {/* TOTAL */}
-
-                    <div className="col-md-3 mb-3">
-                      <label>
-                        Total Amount
-                      </label>
-
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={
-                          data.amount
-                        }
-                        readOnly
-                      />
-                    </div>
-
-                    {/* DESCRIPTION */}
-
-                    <div className="col-md-12 mb-3">
-                      <label>
-                        Description
-                      </label>
-
-                      <textarea
-                        className="form-control"
-                        name="description"
-                        value={
-                          data.description
-                        }
-                        onChange={
-                          handleChange
-                        }
-                      ></textarea>
-                    </div>
-                  </div>
-
-                  <div className="text-end">
-                    <button
-                      type="button"
-                      className="btn btn-secondary me-2"
-                      onClick={
-                        resetForm
-                      }
-                    >
-                      Close
-                    </button>
-
-                    <button className="btn btn-primary">
-                      Update
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
