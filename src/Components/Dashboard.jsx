@@ -529,7 +529,7 @@ const Dashboard = () => {
       ₹ {item.waterBill}
     </span>
   ) : (
-    <span className="badge bg-warning">
+    <span className="badge bg-danger">
       Pending
     </span>
   )}
@@ -543,7 +543,7 @@ const Dashboard = () => {
       ₹ {item.electricityBill}
     </span>
   ) : (
-    <span className="badge bg-warning">
+    <span className="badge bg-danger">
       Pending
     </span>
   )}
@@ -557,7 +557,7 @@ const Dashboard = () => {
       ₹ {item.maintainanceBill}
     </span>
   ) : (
-    <span className="badge bg-warning">
+    <span className="badge bg-danger">
       Pending
     </span>
   )}
@@ -571,7 +571,7 @@ const Dashboard = () => {
       ₹ {item.garbageBill}
     </span>
   ) : (
-    <span className="badge bg-warning">
+    <span className="badge bg-danger">
       Pending
     </span>
   )}
@@ -585,7 +585,7 @@ const Dashboard = () => {
       ₹ {item.otherBill}
     </span>
   ) : (
-    <span className="badge bg-warning">
+    <span className="badge bg-danger">
       Pending
     </span>
   )}
@@ -599,7 +599,7 @@ const Dashboard = () => {
       ₹ {item.amount}
     </span>
   ) : (
-    <span className="badge bg-warning text-dark">
+    <span className="badge bg-danger text-dark">
       Pending
     </span>
   )}

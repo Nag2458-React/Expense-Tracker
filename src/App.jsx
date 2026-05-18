@@ -65,6 +65,7 @@ const App = () => {
               <Navbar />
 
               <MyInfo />
+               <Footer />
             </PrivateRoute>
           }
         />
@@ -78,6 +79,7 @@ const App = () => {
               <Navbar />
 
               <AddIncome />
+               <Footer />
             </PrivateRoute>
           }
         />
@@ -89,6 +91,7 @@ const App = () => {
               <Navbar />
 
               <FlatOwners />
+               <Footer />
             </PrivateRoute>
           }
         />

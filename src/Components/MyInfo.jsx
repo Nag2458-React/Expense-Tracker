@@ -24,6 +24,17 @@ export const MyInfo = () => {
   const [selectedMonth, setSelectedMonth] =
     useState("");
 
+  // TOTALS
+
+  const [overallAmount, setOverallAmount] =
+    useState(0);
+
+  const [thisMonthAmount, setThisMonthAmount] =
+    useState(0);
+
+  const [paidAmount, setPaidAmount] =
+    useState(0);
+
   // LOGIN USER
 
   const loginUser = JSON.parse(
@@ -36,9 +47,14 @@ export const MyInfo = () => {
 
     try {
 
+      // GET apartment_amounts DATA
+
       const querySnapshot =
         await getDocs(
-          collection(db, "flat_owners")
+          collection(
+            db,
+            "apartment_amounts"
+          )
         );
 
       const result =
@@ -47,7 +63,7 @@ export const MyInfo = () => {
           ...doc.data(),
         }));
 
-      // FILTER LOGIN USER FLAT
+      // FILTER USER DATA USING FLAT
 
       const userRecords =
         result.filter(
@@ -58,7 +74,19 @@ export const MyInfo = () => {
 
       setAllData(userRecords);
 
-      // CURRENT MONTH DEFAULT
+      // OVERALL TOTAL
+
+      let overall = 0;
+
+      userRecords.forEach((item) => {
+        overall += Number(
+          item.amount || 0
+        );
+      });
+
+      setOverallAmount(overall);
+
+      // CURRENT MONTH
 
       const currentMonth =
         new Date()
@@ -67,7 +95,7 @@ export const MyInfo = () => {
 
       setSelectedMonth(currentMonth);
 
-      // FIND CURRENT MONTH DATA
+      // CURRENT MONTH DATA
 
       const currentData =
         userRecords.find((item) =>
@@ -77,6 +105,57 @@ export const MyInfo = () => {
         );
 
       setUserData(currentData);
+
+      // CURRENT MONTH TOTAL
+
+      let currentMonthTotal = 0;
+
+      userRecords.forEach((item) => {
+
+        if (
+          item.billDate?.startsWith(
+            currentMonth
+          )
+        ) {
+          currentMonthTotal += Number(
+            item.amount || 0
+          );
+        }
+
+      });
+
+      setThisMonthAmount(
+        currentMonthTotal
+      );
+
+      // PAID AMOUNT
+
+      let paid = 0;
+
+      userRecords.forEach((item) => {
+
+        paid +=
+          Number(
+            item.waterBill || 0
+          ) +
+          Number(
+            item.electricityBill ||
+              0
+          ) +
+          Number(
+            item.maintainanceBill ||
+              0
+          ) +
+          Number(
+            item.garbageBill || 0
+          ) +
+          Number(
+            item.otherBill || 0
+          );
+
+      });
+
+      setPaidAmount(paid);
 
     } catch (error) {
 
@@ -111,21 +190,56 @@ export const MyInfo = () => {
       );
 
     setUserData(matchedData);
+
+    // MONTH TOTAL
+
+    let monthTotal = 0;
+
+    allData.forEach((item) => {
+
+      if (
+        item.billDate?.startsWith(
+          month
+        )
+      ) {
+
+        monthTotal += Number(
+          item.amount || 0
+        );
+
+      }
+
+    });
+
+    setThisMonthAmount(monthTotal);
   };
 
-  // BADGE COLOR
+  // STATUS BADGE
 
-  const getBadge = (status) => {
+  const getBadgeClass = (
+    value
+  ) => {
 
-    return status === "Active"
+    return value &&
+      Number(value) > 0
       ? "bg-success"
       : "bg-danger";
+  };
+
+  const getStatusText = (
+    value
+  ) => {
+
+    return value &&
+      Number(value) > 0
+      ? `₹ ${value}`
+      : "Pending";
   };
 
   if (loading) {
 
     return (
-      <div className="container mt-5 text-center mb-4">
+      <div className="container mt-5 text-center">
         <h4>Loading...</h4>
       </div>
     );
@@ -134,15 +248,13 @@ export const MyInfo = () => {
   if (!userData) {
 
     return (
-      <div className="container mt-3 mb-5" style={{paddingBottom:"20px"}}>
+      <div className="container mt-5">
 
-        {/* MONTH PICKER */}
-
-        <div className="row justify-content-center ">
+        <div className="row justify-content-center">
 
           <div className="col-md-3">
 
-            <label className="fw-bold mb-2 mont">
+            <label className="fw-bold mb-2" style={{color:"#fff !important"}}>
               Select Month
             </label>
 
@@ -157,7 +269,7 @@ export const MyInfo = () => {
 
         </div>
 
-        <div className="alert alert-danger text-center">
+        <div className="alert alert-danger mt-4 text-center" >
           No Data Found For Selected Month
         </div>
 
@@ -167,15 +279,15 @@ export const MyInfo = () => {
 
   return (
 
-    <div className="container mt-3 pb-5">
+    <div className="container mt-4 pb-5 my">
 
-      {/* MONTH SELECT */}
+      {/* MONTH */}
 
-      <div className="row justify-content-center mb-4">
+      <div className="row justify-content-center mb-4 ">
 
         <div className="col-md-3">
 
-          <label className="fw-bold mb-2 mont">
+          <label className="fw-bold mb-2 white-text text-white" style={{color:"#fff !important"}}>
             Select Month
           </label>
 
@@ -190,221 +302,289 @@ export const MyInfo = () => {
 
       </div>
 
-      <div className="row justify-content-center">
+      {/* TOTAL BOXES */}
 
-        <div className="col-md-12">
+      <div className="row">
 
-          <div className="card shadow-lg border-0" style={{background:"transparent"}}>
+        <div className="col-md-4 mb-3">
 
-            <div className="card-header  text-center">
+          <div className="card bg-primary text-white shadow">
 
-              <h3 className="mb-0" style={{color:"#000",background:"#fff",padding:"6px",borderRadius:"5px"}}>
-                My Information
-              </h3>
+            <div className="card-body text-center">
+
+              <h5>
+                Overall Amount
+              </h5>
+
+              <h2>
+                ₹ {overallAmount}
+              </h2>
 
             </div>
 
-            <div className="card-body myc">
+          </div>
 
-              {/* TOP INFO */}
+        </div>
 
-              <div className="row ">
+        <div className="col-md-4 mb-3">
 
-                <div className="col-md-4 mb-3">
+          <div className="card bg-success text-white shadow">
 
-                  <div className="card bg-primary text-white shadow">
+            <div className="card-body text-center">
 
-                    <div className="card-body text-center">
+              <h5>
+                This Month Amount
+              </h5>
 
-                      <h6>Flat Number</h6>
+              <h2>
+                ₹ {thisMonthAmount}
+              </h2>
 
-                      <h2 style={{fontSize: '20px'}}>
-                        {userData.flat}
-                      </h2>
+            </div>
 
-                    </div>
+          </div>
 
-                  </div>
+        </div>
 
-                </div>
+        <div className="col-md-4 mb-3">
 
-                <div className="col-md-4 mb-3">
+          <div className="card bg-warning shadow">
 
-                  <div className="card text-white shadow c11">
+            <div className="card-body text-center">
 
-                    <div className="card-body text-center">
+              <h5>
+                Total Paid Amount
+              </h5>
 
-                      <h6>Owner Name</h6>
+              <h2>
+                ₹ {paidAmount}
+              </h2>
 
-                      <h5>
-                        {userData.owner}
-                      </h5>
+            </div>
 
-                    </div>
+          </div>
 
-                  </div>
+        </div>
 
-                </div>
+      </div>
 
-                <div className="col-md-4 mb-1">
+      {/* MAIN CARD */}
 
-                  <div className="card bg-warning text-dark shadow">
+      <div className="card shadow-lg border-0" style={{background:"transparent"}}>
 
-                    <div className="card-body text-center">
+        {/* <div className="card-header bg-dark text-white text-center">
 
-                      <h6>Bill Date</h6>
+          <h3 className="mb-0">
+            My Information
+          </h3>
 
-                      <h5>
-                        {userData.billDate}
-                      </h5>
+        </div> */}
 
-                    </div>
+        <div className="card-body" >
 
-                  </div>
+          {/* TOP INFO */}
+
+          <div className="row mb-4">
+
+            <div className="col-md-4 mt-2">
+
+              <div className="card  text-white shadow">
+
+                <div className="card-body text-center">
+
+                  <h6 style={{color:"#000"}}>
+                    Flat Number
+                  </h6>
+
+                  <h2 style={{fontSize:"20px",color:"#000"}}>
+                    {userData.flat}
+                  </h2>
 
                 </div>
 
               </div>
 
-              {/* BILL STATUS */}
+            </div>
 
-              <div className="row">
+            <div className="col-md-4 mt-2">
 
-                {/* WATER */}
+              <div className="card  text-white shadow">
 
-                <div className="col-md-4 mb-1">
+                <div className="card-body text-center">
 
-                  <div className="card shadow-sm border-1">
+                  <h6  style={{color:"#000"}}>
+                    Owner Name
+                  </h6>
 
-                    <div className="card-body text-center">
-
-                      <h5>
-                        Water Bill
-                      </h5>
-
-                      <span
-                        className={`badge ${getBadge(
-                          userData.waterBill
-                        )} p-2`}
-                      >
-                        {userData.waterBill}
-                      </span>
-
-                    </div>
-
-                  </div>
+                  <h5 style={{color:"#000"}}>
+                    {userData.owner}
+                  </h5>
 
                 </div>
 
-                {/* ELECTRICITY */}
+              </div>
 
-                <div className="col-md-4 mb-3">
+            </div>
 
-                  <div className="card shadow-sm border-1">
+            <div className="col-md-4 mt-2">
 
-                    <div className="card-body text-center">
+              <div className="card   shadow">
 
-                      <h5>
-                        Electricity Bill
-                      </h5>
+                <div className="card-body text-center">
 
-                      <span
-                        className={`badge ${getBadge(
-                          userData.electricityBill
-                        )} p-2`}
-                      >
-                        {
-                          userData.electricityBill
-                        }
-                      </span>
+                  <h6>
+                    Bill Date
+                  </h6>
 
-                    </div>
-
-                  </div>
+                  <h5>
+                    {userData.billDate}
+                  </h5>
 
                 </div>
 
-                {/* MAINTAINANCE */}
+              </div>
 
-                <div className="col-md-4 mb-3">
+            </div>
 
-                  <div className="card shadow-sm border-1">
+          </div>
 
-                    <div className="card-body text-center">
+          {/* BILL STATUS */}
 
-                      <h5>
-                        Maintainance Bill
-                      </h5>
+          <div className="row">
 
-                      <span
-                        className={`badge ${getBadge(
-                          userData.maintainanceBill
-                        )} p-2`}
-                      >
-                        {
-                          userData.maintainanceBill
-                        }
-                      </span>
+            {/* WATER */}
 
-                    </div>
+            <div className="col-md-4 mb-3">
 
-                  </div>
+              <div className="card shadow-sm">
 
-                </div>
+                <div className="card-body text-center">
 
-                {/* GARBAGE */}
+                  <h5>
+                    Water Bill
+                  </h5>
 
-                <div className="col-md-6 mb-3">
-
-                  <div className="card shadow-sm border-1">
-
-                    <div className="card-body text-center">
-
-                      <h5>
-                        Garbage Bill
-                      </h5>
-
-                      <span
-                        className={`badge ${getBadge(
-                          userData.garbageBill
-                        )} p-2`}
-                      >
-                        {
-                          userData.garbageBill
-                        }
-                      </span>
-
-                    </div>
-
-                  </div>
+                  <span
+                    className={`badge ${getBadgeClass(
+                      userData.waterBill
+                    )} p-2`}
+                  >
+                    {getStatusText(
+                      userData.waterBill
+                    )}
+                  </span>
 
                 </div>
 
-                {/* OTHER */}
+              </div>
 
-                <div className="col-md-6 mb-3">
+            </div>
 
-                  <div className="card shadow-sm border-1">
+            {/* ELECTRICITY */}
 
-                    <div className="card-body text-center">
+            <div className="col-md-4 mb-3">
 
-                      <h5>
-                        Other Bill
-                      </h5>
+              <div className="card shadow-sm">
 
-                      <span
-                        className={`badge ${getBadge(
-                          userData.otherBill
-                        )} p-2`}
-                      >
-                        {
-                          userData.otherBill
-                        }
-                      </span>
+                <div className="card-body text-center">
 
-                    </div>
+                  <h5>
+                    Electricity Bill
+                  </h5>
 
-                  </div>
+                  <span
+                    className={`badge ${getBadgeClass(
+                      userData.electricityBill
+                    )} p-2`}
+                  >
+                    {getStatusText(
+                      userData.electricityBill
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* MAINTAINANCE */}
+
+            <div className="col-md-4 mb-3">
+
+              <div className="card shadow-sm">
+
+                <div className="card-body text-center">
+
+                  <h5>
+                    Maintainance Bill
+                  </h5>
+
+                  <span
+                    className={`badge ${getBadgeClass(
+                      userData.maintainanceBill
+                    )} p-2`}
+                  >
+                    {getStatusText(
+                      userData.maintainanceBill
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* GARBAGE */}
+
+            <div className="col-md-6 mb-3">
+
+              <div className="card shadow-sm">
+
+                <div className="card-body text-center">
+
+                  <h5>
+                    Garbage Bill
+                  </h5>
+
+                  <span
+                    className={`badge ${getBadgeClass(
+                      userData.garbageBill
+                    )} p-2`}
+                  >
+                    {getStatusText(
+                      userData.garbageBill
+                    )}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* OTHER */}
+
+            <div className="col-md-6 mb-3">
+
+              <div className="card shadow-sm">
+
+                <div className="card-body text-center">
+
+                  <h5>
+                    Other Bill
+                  </h5>
+
+                  <span
+                    className={`badge ${getBadgeClass(
+                      userData.otherBill
+                    )} p-2`}
+                  >
+                    {getStatusText(
+                      userData.otherBill
+                    )}
+                  </span>
 
                 </div>
 
